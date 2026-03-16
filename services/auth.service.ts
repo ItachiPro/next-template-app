@@ -1,4 +1,4 @@
-import { http } from '@/lib/http'
+import api from '@/lib/axios'
 
 type RegisterDTO = {
   name: string
@@ -9,12 +9,12 @@ type RegisterDTO = {
 
 export const AuthService = {
   async register(data: RegisterDTO) {
-    const response = await http.post('/register', data)
+    const response = await api.post('/register', data)
     return response.data
   },
 
   async login(data: { email: string; password: string }) {
-    const response = await http.post('/login', data)
+    const response = await api.post('/login', data)
     return response.data
   },
 }

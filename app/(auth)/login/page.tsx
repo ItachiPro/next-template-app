@@ -1,13 +1,17 @@
 'use client'
 
+import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import React, { useMemo, useState } from 'react'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
 }
 
 const LoginPage = () => {
+  const router = useRouter()
+
   const [showPassword, setShowPassword] = useState(false)
   const [pending, setPending] = useState(false)
 
@@ -28,10 +32,25 @@ const LoginPage = () => {
     return form.password.length >= 8 ? '' : 'Minimum 8 characters.'
   }, [form.password])
 
-  const canSubmit =
-    form.email && form.password && !emailError && !passwordError && !pending
+  const canSubmit = Boolean(
+    form.email && form.password && !emailError && !passwordError && !pending,
+  )
 
-  const onSubmit = async () => {}
+  const onSubmit = async () => {
+    if (pending) return
+
+    try {
+      setPending(true)
+      await AuthService.login(form)
+
+      router.replace('/dashboard')
+      router.refresh()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setPending(false)
+    }
+  }
 
   return (
     <div className="rounded-3xl bg-zinc-900/40 p-6 ring-1 ring-white/10 backdrop-blur">
@@ -42,7 +61,7 @@ const LoginPage = () => {
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm text-zinc-200" htmlFor="email">
             Email
@@ -119,6 +138,7 @@ const LoginPage = () => {
         </div>
 
         <button
+          onClick={onSubmit}
           disabled={!canSubmit}
           className={cn(
             'mt-2 w-full rounded-2xl px-4 py-3 text-sm font-medium transition',

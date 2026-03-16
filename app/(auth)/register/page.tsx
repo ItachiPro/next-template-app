@@ -3,12 +3,15 @@
 import { useMemo, useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
 }
 
 const RegisterPage = () => {
+  const router = useRouter()
+
   const [pending, setPending] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -50,13 +53,17 @@ const RegisterPage = () => {
     !pending
 
   const onSubmit = async () => {
+    if (pending) return
     try {
-      const data = await AuthService.register(form)
+      setPending(true)
+      await AuthService.register(form)
 
-      localStorage.setItem('token', data.token)
-      console.log('Registered: ', data)
+      router.replace('/dashboard')
+      router.refresh()
     } catch (error) {
       console.error(error)
+    } finally {
+      setPending(false)
     }
   }
 
@@ -69,7 +76,7 @@ const RegisterPage = () => {
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm text-zinc-200" htmlFor="name">
             Name
@@ -164,6 +171,7 @@ const RegisterPage = () => {
         </div>
 
         <button
+          onClick={onSubmit}
           disabled={!canSubmit}
           className={cn(
             'mt-2 w-full rounded-2xl px-4 py-3 text-sm font-medium transition',
