@@ -41,10 +41,16 @@ const LoginPage = () => {
 
     try {
       setPending(true)
-      await AuthService.login(form)
+      const response = await AuthService.login(form)
 
-      router.replace('/dashboard')
-      router.refresh()
+      console.log('RES: ', JSON.stringify(response, null, 2))
+
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.data.token)
+
+        router.replace('/dashboard')
+        router.refresh()
+      }
     } catch (error) {
       console.error(error)
     } finally {
