@@ -1,9 +1,9 @@
 'use client'
 
+import { useMemo, useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, { useMemo, useState } from 'react'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
