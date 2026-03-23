@@ -1,4 +1,20 @@
+'use client'
+
+import { useEffect } from 'react'
+import { redirect } from 'next/navigation'
+import { useAuth } from '../context'
+
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      redirect('/dashboard')
+    }
+  }, [isAuthenticated])
+
+  if (isAuthenticated) return null
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="mx-auto grid min-h-screen max-w-6xl lg:grid-cols-2">

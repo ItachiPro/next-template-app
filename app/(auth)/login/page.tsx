@@ -3,23 +3,47 @@
 import { useMemo, useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { redirect } from 'next/navigation'
+import { useAuth } from '@/app/context'
+import { LoginInput, loginSchema } from '@/lib/auth-schemas'
+import { mapZodErrorsToFormErrors } from '@/utils'
+import { FormError } from '@/types'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
 }
 
 const LoginPage = () => {
-  const router = useRouter()
+  const { login } = useAuth()
 
-  const [showPassword, setShowPassword] = useState(false)
-  const [pending, setPending] = useState(false)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [pending, setPending] = useState<boolean>(false)
 
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
+  const [form, setForm] = useState<LoginInput>({
+    email: 'wltrstnly@hotmail.com',
+    password: '12345678',
     remember: true,
   })
+
+  const [errors, setErrors] = useState<FormError[]>([])
+
+  const validateForm = () => {
+    const result = loginSchema.safeParse(form)
+
+    if (!result.success) {
+      const fieldErrors = mapZodErrorsToFormErrors(result.error)
+
+      return {
+        isValid: false,
+        errors: fieldErrors,
+      }
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+    }
+  }
 
   const emailError = useMemo(() => {
     if (!form.email) return ''
@@ -32,24 +56,26 @@ const LoginPage = () => {
     return form.password.length >= 8 ? '' : 'Minimum 8 characters.'
   }, [form.password])
 
-  const canSubmit = Boolean(
-    form.email && form.password && !emailError && !passwordError && !pending,
-  )
+  const canSubmit = !pending
 
   const onSubmit = async () => {
     if (pending) return
+
+    const { isValid, errors: newErrors } = validateForm()
+
+    setErrors(newErrors)
+
+    console.log('ERRORS: ', JSON.stringify(newErrors, null, 2))
+
+    if (!isValid) return
 
     try {
       setPending(true)
       const response = await AuthService.login(form)
 
-      console.log('RES: ', JSON.stringify(response, null, 2))
-
       if (response.status === 200) {
-        localStorage.setItem('token', response.data.data.token)
-
-        router.replace('/dashboard')
-        router.refresh()
+        login(response.data.data.token)
+        redirect('/dashboard')
       }
     } catch (error) {
       console.error(error)

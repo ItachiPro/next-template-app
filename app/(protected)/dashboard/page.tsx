@@ -1,23 +1,28 @@
 'use client'
 
+import { useAuth } from '@/app/context'
 import { AuthService } from '@/services/auth.service'
+import { redirect } from 'next/navigation'
 
 const DashboardPage = () => {
-  const logout = async () => {
+  const { logout } = useAuth()
+
+  const onLogout = async () => {
     const response = await AuthService.logout()
 
     if (response.status === 200) {
-      localStorage.removeItem('token')
+      logout()
+      redirect('/login')
     }
   }
 
   return (
-    <div className="">
+    <div className="mt-2">
       <h1>Dashboard</h1>
 
       <button
         className="mt-2 w-full rounded-2xl px-4 py-3 text-sm font-medium transition"
-        onClick={logout}
+        onClick={onLogout}
       >
         Logout
       </button>

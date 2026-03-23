@@ -3,14 +3,15 @@
 import { useMemo, useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { redirect } from 'next/navigation'
+import { useAuth } from '@/app/context'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
 }
 
 const RegisterPage = () => {
-  const router = useRouter()
+  const { login } = useAuth()
 
   const [pending, setPending] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -56,10 +57,12 @@ const RegisterPage = () => {
     if (pending) return
     try {
       setPending(true)
-      await AuthService.register(form)
+      const response = await AuthService.register(form)
 
-      router.replace('/dashboard')
-      router.refresh()
+      if (response.status === 200) {
+        login(response.data.data.token)
+        redirect('/dashboard')
+      }
     } catch (error) {
       console.error(error)
     } finally {
