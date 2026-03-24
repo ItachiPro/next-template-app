@@ -1,13 +1,12 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/context'
-import { LoginInput, loginSchema } from '@/lib/auth-schemas'
-import { mapZodErrorsToFormErrors } from '@/utils'
-import { FormError } from '@/types'
+import { useForm } from '@/app/hooks'
+import { loginSchema } from '@/lib/auth-schemas'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
@@ -15,74 +14,33 @@ const cn = (...classes: Array<string | false | undefined | null>) => {
 
 const LoginPage = () => {
   const { login } = useAuth()
+  const router = useRouter()
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [pending, setPending] = useState<boolean>(false)
 
-  const [form, setForm] = useState<LoginInput>({
-    email: 'wltrstnly@hotmail.com',
-    password: '12345678',
-    remember: true,
+  const {
+    pending,
+    getInputProps,
+    getCheckboxProps,
+    getError,
+    hasError,
+    handleSubmit,
+  } = useForm({
+    initialValues: {
+      email: '',
+      password: '',
+      remember: true,
+    },
+    schema: loginSchema,
+    onSubmit: async (values) => {
+      const res = await AuthService.login(values)
+
+      if (res.status === 200) {
+        login(res.data.data.token)
+        router.push('dashboard')
+      }
+    },
   })
-
-  const [errors, setErrors] = useState<FormError[]>([])
-
-  const validateForm = () => {
-    const result = loginSchema.safeParse(form)
-
-    if (!result.success) {
-      const fieldErrors = mapZodErrorsToFormErrors(result.error)
-
-      return {
-        isValid: false,
-        errors: fieldErrors,
-      }
-    }
-
-    return {
-      isValid: true,
-      errors: [],
-    }
-  }
-
-  const emailError = useMemo(() => {
-    if (!form.email) return ''
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
-    return ok ? '' : 'Please enter a valid email.'
-  }, [form.email])
-
-  const passwordError = useMemo(() => {
-    if (!form.password) return ''
-    return form.password.length >= 8 ? '' : 'Minimum 8 characters.'
-  }, [form.password])
-
-  const canSubmit = !pending
-
-  const onSubmit = async () => {
-    if (pending) return
-
-    const { isValid, errors: newErrors } = validateForm()
-
-    setErrors(newErrors)
-
-    console.log('ERRORS: ', JSON.stringify(newErrors, null, 2))
-
-    if (!isValid) return
-
-    try {
-      setPending(true)
-      const response = await AuthService.login(form)
-
-      if (response.status === 200) {
-        login(response.data.data.token)
-        redirect('/dashboard')
-      }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setPending(false)
-    }
-  }
 
   return (
     <div className="rounded-3xl bg-zinc-900/40 p-6 ring-1 ring-white/10 backdrop-blur">
@@ -103,15 +61,16 @@ const LoginPage = () => {
             type="email"
             autoComplete="email"
             placeholder="stan@email.com"
-            value={form.email}
-            onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+            {...getInputProps('email')}
             className={cn(
               'w-full rounded-2xl bg-zinc-950/40 px-4 py-3 text-sm outline-none ring-1 transition',
               'ring-white/10 focus:ring-white/20',
-              emailError && 'ring-rose-500/40 focus:ring-rose-500/50',
+              hasError('email') && 'ring-rose-500/40 focus:ring-rose-500/50',
             )}
           />
-          {emailError && <p className="text-xs text-rose-300">{emailError}</p>}
+          {getError('email') && (
+            <p className="text-xs text-rose-300">{getError('email')}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -124,14 +83,12 @@ const LoginPage = () => {
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="********"
-              value={form.password}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, password: e.target.value }))
-              }
+              {...getInputProps('password')}
               className={cn(
                 'w-full rounded-2xl bg-zinc-950/40 px-4 py-3 pr-12 text-sm outline-none ring-1 transition',
                 'ring-white/10 focus:ring-white/20',
-                passwordError && 'ring-rose-500/40 focus:ring-rose-500/50',
+                hasError('password') &&
+                  'ring-rose-500/40 focus:ring-rose-500/50',
               )}
             />
             <button
@@ -143,8 +100,8 @@ const LoginPage = () => {
               {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>
-          {passwordError && (
-            <p className="text-xs text-rose-300">{passwordError}</p>
+          {getError('password') && (
+            <p className="text-xs text-rose-300">{getError('password')}</p>
           )}
         </div>
 
@@ -152,10 +109,7 @@ const LoginPage = () => {
           <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-300">
             <input
               type="checkbox"
-              checked={form.remember}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, remember: e.target.checked }))
-              }
+              {...getCheckboxProps('remember')}
               className="h-4 w-4 rounded border-white/20 bg-zinc-950/40"
             />
             Remember me
@@ -170,8 +124,8 @@ const LoginPage = () => {
         </div>
 
         <button
-          onClick={onSubmit}
-          disabled={!canSubmit}
+          type="button"
+          onClick={handleSubmit}
           className={cn(
             'mt-2 w-full rounded-2xl px-4 py-3 text-sm font-medium transition',
             'bg-white text-zinc-950 hover:bg-zinc-200',
@@ -179,21 +133,6 @@ const LoginPage = () => {
           )}
         >
           {pending ? 'Signing in...' : 'Sign in'}
-        </button>
-
-        <div className="relative py-2">
-          <div className="h-px w-full bg-white/10" />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 px-3 text-xs text-zinc-400">
-            o
-          </span>
-        </div>
-
-        <button
-          type="button"
-          className="w-full rounded-2xl bg-zinc-950/40 px-4 py-3 text-sm text-zinc-200 ring-1 ring-white/10 hover:bg-white/5"
-          onClick={() => alert('OAuth demo')}
-        >
-          Continue with Google
         </button>
 
         <p className="pt-2 text-center text-sm text-zinc-400">
