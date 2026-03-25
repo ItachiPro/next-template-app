@@ -11,14 +11,11 @@ export const registerSchema = z
     name: z.string().min(2, 'Name must be at least 2 characters.'),
     email: z.email('Please enter a valid email.'),
     password: z.string().min(8, 'Password must be at least 8 characters.'),
-    confirmPassword: z.string().min(8, 'Please confirm your password.'),
-    acceptTerms: z.coerce
-      .boolean()
-      .refine(Boolean, 'You must accept the terms.'),
+    passwordConfirmation: z.string().min(8, 'Please confirm your password.'),
   })
-  .refine((v) => v.password === v.confirmPassword, {
+  .refine((v) => v.password === v.passwordConfirmation, {
     message: 'Passwords do not match.',
-    path: ['confirmPassword'],
+    path: ['passwordConfirmation'],
   })
 
 export type LoginInput = z.infer<typeof loginSchema>

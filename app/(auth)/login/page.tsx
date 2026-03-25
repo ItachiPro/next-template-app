@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/context'
 import { useForm } from '@/app/hooks'
-import { loginSchema } from '@/lib/auth-schemas'
+import { loginSchema } from '@/lib/schemas'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')

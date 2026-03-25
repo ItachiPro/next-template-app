@@ -1,10 +1,12 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/context'
+import { useForm } from '@/app/hooks'
+import { registerSchema } from '@/lib/schemas'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
@@ -12,63 +14,28 @@ const cn = (...classes: Array<string | false | undefined | null>) => {
 
 const RegisterPage = () => {
   const { login } = useAuth()
+  const router = useRouter()
 
-  const [pending, setPending] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  })
+  const { pending, getInputProps, getError, hasError, handleSubmit } = useForm({
+    initialValues: {
+      name: '',
+      email: '',
+      password: '',
+      passwordConfirmation: '',
+    },
+    schema: registerSchema,
+    onSubmit: async (values) => {
+      const res = await AuthService.register(values)
 
-  const emailError = useMemo(() => {
-    if (!form.email) return ''
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
-    return ok ? '' : 'Please enter a valid email.'
-  }, [form.email])
-
-  const passwordError = useMemo(() => {
-    if (!form.password) return ''
-    return form.password.length >= 8
-      ? ''
-      : 'Password must be at least 8 characters.'
-  }, [form.password])
-
-  const confirmError = useMemo(() => {
-    if (!form.confirmPassword) return ''
-    return form.confirmPassword === form.password
-      ? ''
-      : 'Password do not match.'
-  }, [form.confirmPassword, form.password])
-
-  const canSubmit =
-    form.name.trim() &&
-    form.email &&
-    form.password &&
-    form.confirmPassword &&
-    !emailError &&
-    !passwordError &&
-    !confirmError &&
-    !pending
-
-  const onSubmit = async () => {
-    if (pending) return
-    try {
-      setPending(true)
-      const response = await AuthService.register(form)
-
-      if (response.status === 200) {
-        login(response.data.data.token)
-        redirect('/dashboard')
+      if (res.status === 201) {
+        login(res.data.data.token)
+        router.push('/dashboard')
       }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setPending(false)
-    }
-  }
+    },
+  })
 
   return (
     <div className="rounded-3xl bg-zinc-900/40 p-6 ring-1 ring-white/10 backdrop-blur">
@@ -89,10 +56,12 @@ const RegisterPage = () => {
             type="text"
             autoComplete="name"
             placeholder="Stan"
-            value={form.name}
-            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+            {...getInputProps('name')}
             className="w-full rounded-2xl bg-zinc-950/40 px-4 py-3 text-sm outline-none ring-1 ring-white/10 transition focus:ring-white/20"
           />
+          {getError('name') && (
+            <p className="text-xs text-rose-300">{getError('name')}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -104,15 +73,16 @@ const RegisterPage = () => {
             type="email"
             autoComplete="email"
             placeholder="stan@correo.com"
-            value={form.email}
-            onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+            {...getInputProps('email')}
             className={cn(
               'w-full rounded-2xl bg-zinc-950/40 px-4 py-3 text-sm outline-none ring-1 transition',
               'ring-white/10 focus:ring-white/20',
-              emailError && 'ring-rose-500/40 focus:ring-rose-500/50',
+              hasError('email') && 'ring-rose-500/40 focus:ring-rose-500/50',
             )}
           />
-          {emailError && <p className="text-xs text-rose-300">{emailError}</p>}
+          {getError('email') && (
+            <p className="text-xs text-rose-300">{getError('email')}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -125,14 +95,12 @@ const RegisterPage = () => {
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               placeholder="••••••••"
-              value={form.password}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, password: e.target.value }))
-              }
+              {...getInputProps('password')}
               className={cn(
                 'w-full rounded-2xl bg-zinc-950/40 px-4 py-3 pr-12 text-sm outline-none ring-1 transition',
                 'ring-white/10 focus:ring-white/20',
-                passwordError && 'ring-rose-500/40 focus:ring-rose-500/50',
+                hasError('password') &&
+                  'ring-rose-500/40 focus:ring-rose-500/50',
               )}
             />
             <button
@@ -144,8 +112,8 @@ const RegisterPage = () => {
               {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>
-          {passwordError && (
-            <p className="text-xs text-rose-300">{passwordError}</p>
+          {getError('password') && (
+            <p className="text-xs text-rose-300">{getError('password')}</p>
           )}
         </div>
 
@@ -153,29 +121,42 @@ const RegisterPage = () => {
           <label className="text-sm text-zinc-200" htmlFor="confirmPassword">
             Confirm password
           </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            placeholder="••••••••"
-            value={form.confirmPassword}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, confirmPassword: e.target.value }))
-            }
-            className={cn(
-              'w-full rounded-2xl bg-zinc-950/40 px-4 py-3 text-sm outline-none ring-1 transition',
-              'ring-white/10 focus:ring-white/20',
-              confirmError && 'ring-rose-500/40 focus:ring-rose-500/50',
-            )}
-          />
-          {confirmError && (
-            <p className="text-xs text-rose-300">{confirmError}</p>
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              placeholder="••••••••"
+              {...getInputProps('passwordConfirmation')}
+              className={cn(
+                'w-full rounded-2xl bg-zinc-950/40 px-4 py-3 text-sm outline-none ring-1 transition',
+                'ring-white/10 focus:ring-white/20',
+                hasError('passwordConfirmation') &&
+                  'ring-rose-500/40 focus:ring-rose-500/50',
+              )}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((s) => !s)}
+              className="absolute inset-y-0 right-2 my-auto rounded-xl px-3 text-xs text-zinc-300 hover:bg-white/5"
+              aria-label={
+                showConfirmPassword ? 'Hide password' : 'Show password'
+              }
+            >
+              {showConfirmPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
+          {getError('passwordConfirmation') && (
+            <p className="text-xs text-rose-300">
+              {getError('passwordConfirmation')}
+            </p>
           )}
         </div>
 
         <button
-          onClick={onSubmit}
-          disabled={!canSubmit}
+          type="button"
+          onClick={handleSubmit}
           className={cn(
             'mt-2 w-full rounded-2xl px-4 py-3 text-sm font-medium transition',
             'bg-white text-zinc-950 hover:bg-zinc-200',

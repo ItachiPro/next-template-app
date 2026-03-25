@@ -27,7 +27,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const login = (token: string) => {
-    console.log('TOKEN: ', token)
     localStorage.setItem('token', token)
     setIsAuthenticated(true)
   }
