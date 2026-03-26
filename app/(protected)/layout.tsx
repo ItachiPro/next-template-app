@@ -2,10 +2,11 @@
 
 import { useEffect } from 'react'
 import { redirect } from 'next/navigation'
-import { useAuth } from '../context'
+import { useAuthContext } from '../context'
+import { Navbar } from '../components'
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthContext()
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -15,7 +16,12 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (!isAuthenticated) return null
 
-  return <>{children}</>
+  return (
+    <>
+      <Navbar />
+      {children}
+    </>
+  )
 }
 
 export default ProtectedLayout

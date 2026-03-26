@@ -1,11 +1,11 @@
 'use client'
 
-import { useAuth } from '@/app/context'
+import { useAuthContext } from '@/app/context'
 import { AuthService } from '@/services/auth.service'
 import { redirect } from 'next/navigation'
 
 const DashboardPage = () => {
-  const { logout } = useAuth()
+  const { logout } = useAuthContext()
 
   const onLogout = async () => {
     const response = await AuthService.logout()

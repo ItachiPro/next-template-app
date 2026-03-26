@@ -4,17 +4,20 @@ import { useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/context'
+import { useAuthContext } from '@/app/context'
 import { useForm } from '@/app/hooks'
 import { loginSchema } from '@/lib/schemas'
+import { useAuthStore } from '@/app/store/useAuthStore'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
 }
 
 const LoginPage = () => {
-  const { login } = useAuth()
+  const { login } = useAuthContext()
   const router = useRouter()
+
+  const { setUser } = useAuthStore.getState()
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
@@ -37,6 +40,11 @@ const LoginPage = () => {
 
       if (res.status === 200) {
         login(res.data.data.token)
+
+        const me = await AuthService.me()
+
+        setUser(me.data.data)
+
         router.push('dashboard')
       }
     },

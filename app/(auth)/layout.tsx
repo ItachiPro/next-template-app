@@ -2,10 +2,10 @@
 
 import { useEffect } from 'react'
 import { redirect } from 'next/navigation'
-import { useAuth } from '../context'
+import { useAuthContext } from '../context'
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthContext()
 
   useEffect(() => {
     if (isAuthenticated) {
