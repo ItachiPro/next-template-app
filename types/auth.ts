@@ -7,6 +7,10 @@ export type RegisterDTO = {
   passwordConfirmation: string
 }
 
+export type RegisterResponse = {
+  user: User
+}
+
 export type LoginDTO = {
   email: string
   password: string
