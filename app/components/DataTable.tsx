@@ -1,23 +1,26 @@
 import { useMemo } from 'react'
-import { TableHeader } from '@/types'
-import { Pencil, Trash } from 'lucide-react'
+import { Pagination, TableHeader } from '@/types'
 
 type TableRow = Record<string, React.ReactNode>
 
 type Props<TData extends TableRow> = {
   headers: TableHeader<TData>[]
   data: TData[]
-  onEdit?: (row: TData) => void
-  onDelete?: (row: TData) => void
+  renderActions?: (row: TData) => React.ReactNode
+  pagination?: Pagination
+  onPageChange?: (page: number) => void
 }
 
 export const DataTable = <TData extends TableRow>({
   headers,
   data,
-  onEdit,
-  onDelete,
+  renderActions,
+  pagination,
+  onPageChange,
 }: Props<TData>) => {
   const tableHeaders = useMemo(() => {
+    if (!renderActions) return headers
+
     return [
       ...headers,
       {
@@ -25,7 +28,7 @@ export const DataTable = <TData extends TableRow>({
         value: 'action',
       },
     ]
-  }, [headers])
+  }, [headers, renderActions])
 
   return (
     <div className="relative overflow-x-auto bg-white shadow-sm rounded-xl border border-gray-200">
@@ -36,7 +39,9 @@ export const DataTable = <TData extends TableRow>({
               <th
                 key={`${String(item.value)}-${index}`}
                 scope="col"
-                className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                className={`px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider ${
+                  item.value === 'action' ? 'text-right' : 'text-left'
+                }`}
               >
                 {item.label}
               </th>
@@ -52,22 +57,13 @@ export const DataTable = <TData extends TableRow>({
               {tableHeaders.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className="px-6 py-4 whitespace-nowrap text-gray-800"
+                  className={`px-6 py-4 whitespace-nowrap text-gray-800 ${
+                    col.value === 'action' ? 'text-right' : 'text-left'
+                  }`}
                 >
                   {col.value === 'action' ? (
-                    <div className="flex gap-2">
-                      <button
-                        className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
-                        onClick={() => onEdit?.(row)}
-                      >
-                        <Pencil size={18} />
-                      </button>
-                      <button
-                        className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
-                        onClick={() => onDelete?.(row)}
-                      >
-                        <Trash size={18} />
-                      </button>
+                    <div className="flex justify-end gap-2">
+                      {renderActions?.(row)}
                     </div>
                   ) : (
                     (row[col.value as keyof TData] as React.ReactNode)
@@ -80,20 +76,40 @@ export const DataTable = <TData extends TableRow>({
       </table>
       <nav className="flex items-center justify-between px-6 py-4">
         <span className="text-sm text-gray-500">
-          Showing <span className="font-semibold text-heading">1-10</span> of{' '}
-          <span className="font-semibold text-heading">100</span>
+          Showing{' '}
+          <span className="font-semibold text-heading">
+            {pagination?.from}-{pagination?.to}
+          </span>{' '}
+          of{' '}
+          <span className="font-semibold text-heading">
+            {pagination?.total}
+          </span>
         </span>
 
         <div className="flex items-center gap-2">
-          <button className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-100 transition">
-            Previous
-          </button>
-          <button className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg">
-            1
-          </button>
-          <button className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-100 transition">
-            Next
-          </button>
+          {pagination?.links?.map((link, index) => {
+            const isDisabled = link.page === null
+
+            const label = link.label
+              .replace('&laquo;', '')
+              .replace('&raquo;', '')
+              .trim()
+
+            return (
+              <button
+                key={index}
+                disabled={isDisabled}
+                onClick={() => link.page && onPageChange?.(link.page)}
+                className={`px-3 py-1.5 text-sm rounded-lg border transition ${
+                  link.active
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'
+                } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {label}
+              </button>
+            )
+          })}
         </div>
       </nav>
     </div>

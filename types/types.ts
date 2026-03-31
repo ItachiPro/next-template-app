@@ -9,3 +9,7 @@ export type UserDTO = {
 export type UserResponse = {
   user: User
 }
+
+export type PermissionDTO = {
+  name: string
+}
