@@ -5,12 +5,19 @@ import { DataTable, Protected } from '@/app/components'
 import { PermissionService } from '@/services/permission.service'
 import { Pencil, Trash } from 'lucide-react'
 import { Pagination, Permission } from '@/types'
+import { PermissionResponse } from '@/types/types'
+import { getPaginationData } from '@/utils'
 
 const PermissionPage = () => {
   const hasFetched = useRef(false)
 
-  const [permissions, setPermissions] = useState([])
-  const [pagination, setPagination] = useState({})
+  const [permissions, setPermissions] = useState<Permission[]>([])
+  const [pagination, setPagination] = useState<Pagination>({
+    from: null,
+    to: null,
+    total: 0,
+    links: [],
+  })
 
   const editPermission = (permission: Permission) => {
     console.log('EDIT: ', JSON.stringify(permission, null, 2))
@@ -18,6 +25,19 @@ const PermissionPage = () => {
 
   const deletePermission = (permission: Permission) => {
     console.log('DELETE: ', JSON.stringify(permission, null, 2))
+  }
+
+  const changePage = async (page: number) => {
+    const res = await PermissionService.getPermissions({ page })
+
+    if (res.status === 200) {
+      const data: PermissionResponse = res.data
+
+      setPermissions(data.data.data)
+
+      const pagination = getPaginationData(data.data)
+      setPagination(pagination)
+    }
   }
 
   useEffect(() => {
@@ -28,18 +48,12 @@ const PermissionPage = () => {
       const res = await PermissionService.getPermissions()
 
       if (res.status === 200) {
-        setPermissions(res.data.data.data)
-        const paginationData = {
-          from: res.data.data.from,
-          to: res.data.data.to,
-          total: res.data.data.total,
-          links: res.data.data.links.map((link) => ({
-            label: link.label,
-            page: link.page,
-            active: link.active,
-          })),
-        }
-        setPagination(paginationData)
+        const data: PermissionResponse = res.data
+
+        setPermissions(data.data.data)
+
+        const pagination = getPaginationData(data.data)
+        setPagination(pagination)
       }
     }
 
@@ -62,6 +76,7 @@ const PermissionPage = () => {
           ]}
           data={permissions}
           pagination={pagination as Pagination}
+          onPageChange={changePage}
           renderActions={(row) => (
             <>
               <button

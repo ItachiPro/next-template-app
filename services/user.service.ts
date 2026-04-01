@@ -2,8 +2,8 @@ import api from '@/lib/axios'
 import { UserDTO } from '@/types/types'
 
 export const UserService = {
-  async getUsers() {
-    const response = await api.get('/users')
+  async getUsers(params?: object) {
+    const response = await api.get('/users', { params })
     return response
   },
 

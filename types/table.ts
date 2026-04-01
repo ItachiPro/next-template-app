@@ -3,15 +3,15 @@ export type TableHeader<T> = {
   value: keyof T | 'action'
 }
 
-export type paginationLink = {
+export type PaginationLink = {
   label: string
   page: number | null
   active: boolean
 }
 
 export type Pagination = {
-  from: number
-  to: number
+  from: number | null
+  to: number | null
   total: number
-  links: paginationLink[]
+  links: PaginationLink[]
 }

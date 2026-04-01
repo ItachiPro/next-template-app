@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/context'
+import { useAuthContext } from '@/app/context'
 import { useForm } from '@/app/hooks'
 import { registerSchema } from '@/lib/schemas'
 
@@ -13,7 +13,7 @@ const cn = (...classes: Array<string | false | undefined | null>) => {
 }
 
 const RegisterPage = () => {
-  const { login } = useAuth()
+  const { login } = useAuthContext()
   const router = useRouter()
 
   const [showPassword, setShowPassword] = useState(false)

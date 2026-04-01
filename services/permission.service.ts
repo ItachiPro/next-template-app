@@ -2,8 +2,8 @@ import api from '@/lib/axios'
 import { PermissionDTO } from '@/types/types'
 
 export const PermissionService = {
-  async getPermissions() {
-    const response = await api.get('/permissions')
+  async getPermissions(params?: object) {
+    const response = await api.get('/permissions', { params })
     return response
   },
 

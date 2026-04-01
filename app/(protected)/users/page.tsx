@@ -1,15 +1,36 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { DataTable, Protected } from '@/app/components'
+import { DataTable, Protected, UserFormModal } from '@/app/components'
 import { UserService } from '@/services/user.service'
-import { User } from '@/types'
-import { Pencil, Trash, UserRoundCog, UserRoundKey } from 'lucide-react'
+import { Pagination, User } from '@/types'
+import { Pencil, Plus, Trash, UserRoundCog, UserRoundKey } from 'lucide-react'
+import { UserResponse } from '@/types/types'
+import { getPaginationData } from '@/utils'
 
 const UserPage = () => {
   const hasFetched = useRef(false)
 
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState<User[]>([])
+  const [open, setOpen] = useState<boolean>(false)
+  const [mode, setMode] = useState<'create' | 'edit'>('create')
+
+  const [pagination, setPagination] = useState<Pagination>({
+    from: null,
+    to: null,
+    total: 0,
+    links: [],
+  })
+
+  const handleOpenModal = (isEdit: boolean) => {
+    if (isEdit) {
+      setMode('edit')
+    } else {
+      setMode('create')
+    }
+
+    setOpen(true)
+  }
 
   const editUser = (user: User) => {
     console.log('EDIT: ', JSON.stringify(user, null, 2))
@@ -17,6 +38,19 @@ const UserPage = () => {
 
   const deleteUser = (user: User) => {
     console.log('DELETE: ', JSON.stringify(user, null, 2))
+  }
+
+  const changePage = async (page: number) => {
+    const res = await UserService.getUsers({ page })
+
+    if (res.status === 200) {
+      const data: UserResponse = res.data
+
+      setUsers(data.data.data)
+
+      const pagination = getPaginationData(data.data)
+      setPagination(pagination)
+    }
   }
 
   useEffect(() => {
@@ -27,7 +61,12 @@ const UserPage = () => {
       const res = await UserService.getUsers()
 
       if (res.status === 200) {
-        setUsers(res.data.data.data)
+        const data: UserResponse = res.data
+
+        setUsers(data.data.data)
+
+        const pagination = getPaginationData(data.data)
+        setPagination(pagination)
       }
     }
 
@@ -36,9 +75,23 @@ const UserPage = () => {
 
   return (
     <Protected permission="LIST_USER">
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h1 className="text-gray-500">Users</h1>
+      <div className="bg-white rounded-2xl shadow p-6 flex items-center justify-between">
+        <h1 className="text-gray-500 text-lg font-semibold">Users</h1>
+
+        <button
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-100 transition"
+          onClick={() => handleOpenModal(false)}
+        >
+          <Plus size={18} />
+        </button>
       </div>
+
+      <UserFormModal
+        open={open}
+        mode={mode}
+        onClose={() => setOpen(false)}
+        onSuccess={() => {}}
+      />
 
       <div className="mt-6">
         <DataTable
@@ -53,6 +106,8 @@ const UserPage = () => {
             },
           ]}
           data={users}
+          pagination={pagination}
+          onPageChange={changePage}
           renderActions={(row) => (
             <>
               <button
@@ -69,7 +124,7 @@ const UserPage = () => {
               </button>
               <button
                 className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
-                onClick={() => editUser(row)}
+                onClick={() => handleOpenModal(true)}
               >
                 <Pencil size={18} />
               </button>
