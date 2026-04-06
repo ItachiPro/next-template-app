@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Pagination, TableHeader } from '@/types'
+import { Pagination, TableHeader } from '@/app/types'
 
 type TableRow = Record<string, React.ReactNode>
 

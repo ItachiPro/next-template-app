@@ -2,11 +2,11 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore'
-import { AuthService } from '@/services/auth.service'
+import { AuthService } from '@/app/services/auth.service'
 
 type AuthContextType = {
   isAuthenticated: boolean
-  login: (token: string) => void
+  login: () => void
   logout: () => void
 }
 
@@ -25,12 +25,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const init = async () => {
-      const token = localStorage.getItem('token')
-
-      if (!token) {
-        setIsAuthenticated(false)
-        setLoading(false)
+      if (window.location.pathname === '/login') {
         setIsMounted(true)
+        setLoading(false)
+
         return
       }
 
@@ -40,7 +38,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(res.data.data)
         setIsAuthenticated(true)
       } catch {
-        localStorage.removeItem('token')
         setUser(null)
         setIsAuthenticated(false)
       } finally {
@@ -53,13 +50,17 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const login = (token: string) => {
-    localStorage.setItem('token', token)
+  const login = () => {
     setIsAuthenticated(true)
   }
 
-  const logout = () => {
-    localStorage.removeItem('token')
+  const logout = async () => {
+    try {
+      await AuthService.logout()
+    } catch (error) {
+      console.log('LOGOUT ERROR: ', JSON.stringify(error, null, 2))
+    }
+
     setUser(null)
     setIsAuthenticated(false)
   }

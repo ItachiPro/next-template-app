@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useForm } from '@/app/hooks'
-import { userSchema } from '@/lib/schemas'
-import { User } from '@/types'
+import { userSchema } from '@/app/lib/schemas'
+import { User } from '@/app/types'
 import { Eye, EyeOff } from 'lucide-react'
 
 type Props = {

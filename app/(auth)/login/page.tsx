@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { AuthService } from '@/services/auth.service'
+import { AuthService } from '@/app/services/auth.service'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthContext } from '@/app/context'
 import { useForm } from '@/app/hooks'
-import { loginSchema } from '@/lib/schemas'
+import { loginSchema } from '@/app/lib/schemas'
 import { useAuthStore } from '@/app/store/useAuthStore'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
@@ -39,7 +39,7 @@ const LoginPage = () => {
       const res = await AuthService.login(values)
 
       if (res.status === 200) {
-        login(res.data.data.token)
+        login()
 
         const me = await AuthService.me()
 

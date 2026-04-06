@@ -1,3 +1,28 @@
+type RequestConfig = {
+  headers?: Record<string, string>
+}
+
+export type GetParams = RequestConfig & {
+  params?: Record<string, unknown>
+}
+
+export type GetByIdParams = RequestConfig & {
+  id: string
+}
+
+export type SaveParams<TData> = RequestConfig & {
+  data: TData
+}
+
+export type UpdateParams<TData> = RequestConfig & {
+  id: string
+  data: TData
+}
+
+export type DeleteParams = RequestConfig & {
+  id: string
+}
+
 export type ApiErrorResponse = {
   success: boolean
   message?: string

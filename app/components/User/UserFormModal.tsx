@@ -1,6 +1,6 @@
 'use client'
 
-import { User } from '@/types'
+import { User } from '@/app/types'
 import { Modal } from '../Modal'
 import { UserForm } from '../Form'
 

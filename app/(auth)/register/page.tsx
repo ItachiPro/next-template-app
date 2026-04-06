@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { AuthService } from '@/services/auth.service'
+import { AuthService } from '@/app/services/auth.service'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthContext } from '@/app/context'
 import { useForm } from '@/app/hooks'
-import { registerSchema } from '@/lib/schemas'
+import { registerSchema } from '@/app/lib/schemas'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
@@ -31,7 +31,7 @@ const RegisterPage = () => {
       const res = await AuthService.register(values)
 
       if (res.status === 201) {
-        login(res.data.data.token)
+        login()
         router.push('/dashboard')
       }
     },

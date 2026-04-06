@@ -1,101 +1,41 @@
-'use client'
+import { PermissionComponent } from '@/app/components/Permission'
+import { getAuthHeaders } from '@/app/lib/auth-headers'
+import { PermissionService } from '@/app/services/permission.service'
+import { Pagination, Permission } from '@/app/types'
+import { PermissionResponse } from '@/app/types/types'
+import { getPaginationData } from '@/app/utils'
 
-import { useEffect, useRef, useState } from 'react'
-import { DataTable, Protected } from '@/app/components'
-import { PermissionService } from '@/services/permission.service'
-import { Pencil, Trash } from 'lucide-react'
-import { Pagination, Permission } from '@/types'
-import { PermissionResponse } from '@/types/types'
-import { getPaginationData } from '@/utils'
+const PermissionPage = async () => {
+  const headers = await getAuthHeaders()
 
-const PermissionPage = () => {
-  const hasFetched = useRef(false)
+  let permissions: Permission[] = []
 
-  const [permissions, setPermissions] = useState<Permission[]>([])
-  const [pagination, setPagination] = useState<Pagination>({
+  let pagination: Pagination = {
     from: null,
     to: null,
     total: 0,
     links: [],
-  })
-
-  const editPermission = (permission: Permission) => {
-    console.log('EDIT: ', JSON.stringify(permission, null, 2))
   }
 
-  const deletePermission = (permission: Permission) => {
-    console.log('DELETE: ', JSON.stringify(permission, null, 2))
-  }
-
-  const changePage = async (page: number) => {
-    const res = await PermissionService.getPermissions({ page })
+  try {
+    const res = await PermissionService.getPermissions({ headers })
 
     if (res.status === 200) {
       const data: PermissionResponse = res.data
 
-      setPermissions(data.data.data)
+      permissions = data.data.data
 
-      const pagination = getPaginationData(data.data)
-      setPagination(pagination)
+      pagination = getPaginationData(data.data)
     }
+  } catch (error) {
+    console.log('ERROR: ', error)
   }
 
-  useEffect(() => {
-    if (hasFetched.current) return
-    hasFetched.current = true
-
-    const fetchPermissions = async () => {
-      const res = await PermissionService.getPermissions()
-
-      if (res.status === 200) {
-        const data: PermissionResponse = res.data
-
-        setPermissions(data.data.data)
-
-        const pagination = getPaginationData(data.data)
-        setPagination(pagination)
-      }
-    }
-
-    fetchPermissions()
-  }, [])
-
   return (
-    <Protected permission="LIST_PERMISSION">
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h1 className="text-gray-500">Permissions</h1>
-      </div>
-
-      <div className="mt-6">
-        <DataTable
-          headers={[
-            {
-              label: 'Name',
-              value: 'name',
-            },
-          ]}
-          data={permissions}
-          pagination={pagination as Pagination}
-          onPageChange={changePage}
-          renderActions={(row) => (
-            <>
-              <button
-                className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
-                onClick={() => editPermission(row)}
-              >
-                <Pencil size={18} />
-              </button>
-              <button
-                className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
-                onClick={() => deletePermission(row)}
-              >
-                <Trash size={18} />
-              </button>
-            </>
-          )}
-        />
-      </div>
-    </Protected>
+    <PermissionComponent
+      initialData={permissions}
+      initialPagination={pagination}
+    />
   )
 }
 

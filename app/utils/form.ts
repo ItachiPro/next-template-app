@@ -1,4 +1,4 @@
-import { FormError } from '@/types'
+import { FormError } from '@/app/types'
 import { ZodError } from 'zod'
 
 export const mapZodErrorsToFormErrors = (zodErrors: ZodError): FormError[] => {

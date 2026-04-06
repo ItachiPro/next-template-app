@@ -1,8 +1,10 @@
+'use client'
+
+import { useState } from 'react'
 import { useAuthContext } from '../context'
-import { AuthService } from '@/services/auth.service'
+import { AuthService } from '@/app/services/auth.service'
 import { Menu, UserRound } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 type Props = {
   setMobileOpen: (value: boolean) => void

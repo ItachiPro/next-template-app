@@ -1,4 +1,8 @@
-import { PaginatedResponse, Pagination, PaginationLinkResponse } from '@/types'
+import {
+  PaginatedResponse,
+  Pagination,
+  PaginationLinkResponse,
+} from '@/app/types'
 
 export const getPaginationData = <T>(
   pagination: PaginatedResponse<T>,

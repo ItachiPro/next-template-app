@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { FormError } from '@/types'
+import { FormError } from '@/app/types'
 import { ZodType } from 'zod'
-import { mapZodErrorsToFormErrors } from '@/utils'
+import { mapZodErrorsToFormErrors } from '@/app/utils'
 
 type Props<T> = {
   initialValues: T

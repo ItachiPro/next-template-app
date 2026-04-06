@@ -1,5 +1,5 @@
-import api from '@/lib/axios'
-import { LoginDTO, RegisterDTO } from '@/types'
+import api from '@/app/lib/axios'
+import { LoginDTO, RegisterDTO } from '@/app/types'
 
 export const AuthService = {
   async register(data: RegisterDTO) {
