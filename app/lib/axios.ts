@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
-import { ApiErrorResponse } from '../types'
+import { ApiErrorResponse, ToastType } from '../types'
+import { getToastMessage } from '../utils'
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
@@ -41,7 +42,7 @@ instance.interceptors.response.use(
       }
     }
 
-    console.log('ERROR: ', JSON.stringify(message, null, 2))
+    getToastMessage(message, ToastType.Error)
 
     return Promise.reject(error)
   },

@@ -2,13 +2,17 @@
 
 import { useState } from 'react'
 import { useForm } from '@/app/hooks'
-import { userSchema } from '@/app/lib/schemas'
-import { User } from '@/app/types'
+import { getUserSchema } from '@/app/lib/schemas'
+import { FormAction, ToastType, User } from '@/app/types'
 import { Eye, EyeOff } from 'lucide-react'
+import { UserService } from '@/app/services/user.service'
+import toast from 'react-hot-toast'
+import { UserResponse } from '@/app/types/types'
+import { getToastMessage } from '@/app/utils'
 
 type Props = {
-  mode: 'create' | 'edit'
-  user?: User
+  mode: FormAction
+  user?: User | null
   onSuccess: () => void
 }
 
@@ -21,8 +25,34 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
       email: user?.email || '',
       password: '',
     },
-    schema: userSchema,
-    onSubmit: async () => {},
+    schema: getUserSchema(mode === FormAction.Edit),
+    onSubmit: async (values) => {
+      const isEdit = mode === FormAction.Edit
+
+      const id = isEdit && user ? user.id : 0
+
+      const payload = isEdit
+        ? {
+            ...values,
+            ...(values.password ? { password: values.password } : {}),
+          }
+        : values
+
+      try {
+        const res = isEdit
+          ? await UserService.updateUser({ id, data: payload })
+          : await UserService.saveUser({ data: payload })
+
+        if (res.status === 201 || res.status === 200) {
+          const data: UserResponse = res.data
+          getToastMessage(data.message, ToastType.Success)
+          onSuccess()
+        }
+      } catch (error) {
+        console.log('ERROR SAVING USER: ', JSON.stringify(error, null, 2))
+        toast.error('Error saving user')
+      }
+    },
   })
 
   return (
@@ -36,7 +66,9 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
           type="text"
           placeholder="Name"
           {...getInputProps('name')}
-          className="text-gray-500 w-full border rounded-lg px-3 py-2"
+          className={`w-full rounded-lg px-3 py-2 text-gray-500 border ${
+            hasError('name') ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
         {getError('name') && (
           <p className="text-xs text-rose-300">{getError('name')}</p>
@@ -52,7 +84,9 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
           type="email"
           placeholder="email@correo.com"
           {...getInputProps('email')}
-          className="text-gray-500 w-full border rounded-lg px-3 py-2"
+          className={`w-full rounded-lg px-3 py-2 text-gray-500 border ${
+            hasError('email') ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
         {getError('email') && (
           <p className="text-xs text-rose-300">{getError('email')}</p>
@@ -74,7 +108,9 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
               autoComplete="new-password"
               placeholder="••••••••"
               {...getInputProps('password')}
-              className="text-gray-500 w-full border rounded-lg px-3 py-2"
+              className={`w-full rounded-lg px-3 py-2 text-gray-500 border ${
+                hasError('password') ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
             <button
               type="button"
@@ -97,13 +133,7 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
         disabled={pending}
         className="w-full bg-blue-600 text-white py-2 rounded-lg"
       >
-        {pending
-          ? mode === 'create'
-            ? 'Saving...'
-            : 'Updating...'
-          : mode === 'create'
-            ? 'Save'
-            : 'Update'}
+        {pending ? (mode === 'create' ? 'Saving...' : 'Updating...') : 'Save'}
       </button>
     </form>
   )

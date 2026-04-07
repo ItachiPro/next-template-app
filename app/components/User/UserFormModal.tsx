@@ -1,13 +1,13 @@
 'use client'
 
-import { User } from '@/app/types'
+import { FormAction, User } from '@/app/types'
 import { Modal } from '../Modal'
 import { UserForm } from '../Form'
 
 type Props = {
   open: boolean
-  mode: 'create' | 'edit'
-  user?: User
+  mode: FormAction
+  user?: User | null
   onClose: () => void
   onSuccess: () => void
 }
@@ -23,7 +23,7 @@ export const UserFormModal = ({
     <Modal
       open={open}
       onClose={onClose}
-      title={mode === 'create' ? 'Create user' : 'Edit user'}
+      title={mode === FormAction.Create ? 'Create user' : 'Edit user'}
     >
       <UserForm
         mode={mode}

@@ -3,6 +3,11 @@ export enum FormAction {
   Edit = 'edit',
 }
 
+export enum ToastType {
+  Success = 'success',
+  Error = 'error',
+}
+
 export type FormError = {
   field?: string[] | null
   message: string

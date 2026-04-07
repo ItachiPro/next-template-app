@@ -9,6 +9,7 @@ import { Protected } from '../Protected'
 import { Pencil, Plus, Trash, UserRoundCog, UserRoundKey } from 'lucide-react'
 import { UserFormModal } from './UserFormModal'
 import { DataTable } from '../DataTable'
+import { ConfirmModal } from '../ConfirmModal'
 
 type Props = {
   initialData: User[]
@@ -17,26 +18,38 @@ type Props = {
 
 export const UserComponent = ({ initialData, initialPagination }: Props) => {
   const [users, setUsers] = useState<User[]>(initialData)
+  const [user, setUser] = useState<User | null>(null)
   const [pagination, setPagination] = useState<Pagination>(initialPagination)
   const [open, setOpen] = useState<boolean>(false)
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false)
   const [mode, setMode] = useState<FormAction>(FormAction.Create)
 
-  const handleOpenModal = (isEdit: boolean) => {
-    setMode(isEdit ? FormAction.Edit : FormAction.Create)
+  const handleOpenModal = (isEdit: boolean, user?: User) => {
+    if (isEdit) {
+      setMode(FormAction.Edit)
+      setUser(user ? user : null)
+    } else {
+      setMode(FormAction.Create)
+      setUser(null)
+    }
 
     setOpen(true)
   }
 
-  const editUser = (user: User) => {
-    console.log('EDIT: ', JSON.stringify(user, null, 2))
+  const handleOpenConfirmModal = (user: User) => {
+    setUser(user ? user : null)
+    console.log('DELETE: ', JSON.stringify(user, null, 2))
+    setOpenConfirmModal(true)
   }
 
   const deleteUser = (user: User) => {
     console.log('DELETE: ', JSON.stringify(user, null, 2))
   }
 
-  const changePage = async (page: number) => {
-    const res = await UserService.getUsers({ params: { page } })
+  const getUsers = async (page?: number) => {
+    const res = await UserService.getUsers({
+      params: { ...(page ? { page } : {}) },
+    })
 
     if (res.status === 200) {
       const data: UserResponse = res.data
@@ -64,8 +77,9 @@ export const UserComponent = ({ initialData, initialPagination }: Props) => {
       <UserFormModal
         open={open}
         mode={mode}
+        user={user}
         onClose={() => setOpen(false)}
-        onSuccess={() => {}}
+        onSuccess={getUsers}
       />
 
       <div className="mt-6">
@@ -82,7 +96,7 @@ export const UserComponent = ({ initialData, initialPagination }: Props) => {
           ]}
           data={users}
           pagination={pagination}
-          onPageChange={changePage}
+          onPageChange={(page) => getUsers(page)}
           renderActions={(row) => (
             <>
               <button
@@ -99,18 +113,25 @@ export const UserComponent = ({ initialData, initialPagination }: Props) => {
               </button>
               <button
                 className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
-                onClick={() => handleOpenModal(true)}
+                onClick={() => handleOpenModal(true, row)}
               >
                 <Pencil size={18} />
               </button>
               <button
                 className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
-                onClick={() => deleteUser(row)}
+                onClick={() => handleOpenConfirmModal(row)}
               >
                 <Trash size={18} />
               </button>
             </>
           )}
+        />
+        <ConfirmModal
+          isOpen={openConfirmModal}
+          title="Confirm deletion"
+          message="Are you sure you want to delete this user?"
+          onCancel={() => setOpenConfirmModal(false)}
+          onConfirm={() => {}}
         />
       </div>
     </Protected>

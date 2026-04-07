@@ -7,7 +7,7 @@ export type GetParams = RequestConfig & {
 }
 
 export type GetByIdParams = RequestConfig & {
-  id: string
+  id: number
 }
 
 export type SaveParams<TData> = RequestConfig & {
@@ -15,12 +15,12 @@ export type SaveParams<TData> = RequestConfig & {
 }
 
 export type UpdateParams<TData> = RequestConfig & {
-  id: string
+  id: number
   data: TData
 }
 
 export type DeleteParams = RequestConfig & {
-  id: string
+  id: number
 }
 
 export type ApiErrorResponse = {

@@ -4,7 +4,7 @@ import { Permission, User } from './user'
 export type UserDTO = {
   name: string
   email: string
-  password: string
+  password?: string | null
 }
 
 export type PermissionDTO = {
