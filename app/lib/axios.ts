@@ -1,6 +1,5 @@
 import axios, { AxiosError } from 'axios'
-import { ApiErrorResponse, ToastType } from '../types'
-import { getToastMessage } from '../utils'
+import { ApiErrorResponse } from '../types'
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
@@ -34,7 +33,7 @@ instance.interceptors.response.use(
       }
 
       if (status === 403) {
-        message = 'Unauthorized'
+        message = data.message || statusText
       } else if (status >= 400 && status < 500) {
         message = data?.message || statusText
       } else {
@@ -42,9 +41,9 @@ instance.interceptors.response.use(
       }
     }
 
-    getToastMessage(message, ToastType.Error)
+    console.log('AXIOS: ', JSON.stringify(error.response, null, 2))
 
-    return Promise.reject(error)
+    return Promise.reject(message)
   },
 )
 

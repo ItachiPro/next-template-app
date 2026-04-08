@@ -8,6 +8,8 @@ import { useAuthContext } from '@/app/context'
 import { useForm } from '@/app/hooks'
 import { loginSchema } from '@/app/lib/schemas'
 import { useAuthStore } from '@/app/store/useAuthStore'
+import { getToastMessage } from '@/app/utils'
+import { ToastType } from '@/app/types'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
@@ -36,16 +38,22 @@ const LoginPage = () => {
     },
     schema: loginSchema,
     onSubmit: async (values) => {
-      const res = await AuthService.login(values)
+      try {
+        const res = await AuthService.login(values)
 
-      if (res.status === 200) {
-        login()
+        if (res.status === 200) {
+          login()
 
-        const me = await AuthService.me()
+          const me = await AuthService.me()
 
-        setUser(me.data.data)
+          setUser(me.data.data)
 
-        router.push('dashboard')
+          getToastMessage('Welcome', ToastType.Success)
+
+          router.push('dashboard')
+        }
+      } catch (error: unknown) {
+        getToastMessage(String(error), ToastType.Error)
       }
     },
   })

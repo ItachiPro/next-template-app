@@ -9,6 +9,7 @@ const UserPage = async () => {
   const headers = await getAuthHeaders()
 
   let users: User[] = []
+  let errorMessage: string | null = null
 
   let pagination: Pagination = {
     from: null,
@@ -26,11 +27,17 @@ const UserPage = async () => {
       users = data.data.data
       pagination = getPaginationData(data.data)
     }
-  } catch (error) {
-    console.log('ERROR: ', error)
+  } catch (error: unknown) {
+    errorMessage = String(error)
   }
 
-  return <UserComponent initialData={users} initialPagination={pagination} />
+  return (
+    <UserComponent
+      initialData={users}
+      initialPagination={pagination}
+      error={errorMessage}
+    />
+  )
 }
 
 export default UserPage

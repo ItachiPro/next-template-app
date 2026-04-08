@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UserService } from '@/app/services/user.service'
-import { FormAction, Pagination, User } from '@/app/types'
+import { FormAction, Pagination, ToastType, User } from '@/app/types'
 import { UserResponse } from '@/app/types/types'
-import { getPaginationData } from '@/app/utils'
+import { getPaginationData, getToastMessage } from '@/app/utils'
 import { Protected } from '../Protected'
 import { Pencil, Plus, Trash, UserRoundCog, UserRoundKey } from 'lucide-react'
 import { UserFormModal } from './UserFormModal'
@@ -14,9 +14,14 @@ import { ConfirmModal } from '../ConfirmModal'
 type Props = {
   initialData: User[]
   initialPagination: Pagination
+  error?: string | null
 }
 
-export const UserComponent = ({ initialData, initialPagination }: Props) => {
+export const UserComponent = ({
+  initialData,
+  initialPagination,
+  error,
+}: Props) => {
   const [users, setUsers] = useState<User[]>(initialData)
   const [user, setUser] = useState<User | null>(null)
   const [pagination, setPagination] = useState<Pagination>(initialPagination)
@@ -38,12 +43,24 @@ export const UserComponent = ({ initialData, initialPagination }: Props) => {
 
   const handleOpenConfirmModal = (user: User) => {
     setUser(user ? user : null)
-    console.log('DELETE: ', JSON.stringify(user, null, 2))
     setOpenConfirmModal(true)
   }
 
-  const deleteUser = (user: User) => {
-    console.log('DELETE: ', JSON.stringify(user, null, 2))
+  const deleteUser = async (user: User | null) => {
+    if (user === null) return
+
+    try {
+      const res = await UserService.deleteUser({ id: user.id })
+
+      if (res.status === 204) {
+        getToastMessage('User deleted successfully', ToastType.Success)
+        getUsers()
+      }
+    } catch {
+      getToastMessage('Error deleting user', ToastType.Error)
+    }
+
+    setOpenConfirmModal(false)
   }
 
   const getUsers = async (page?: number) => {
@@ -60,6 +77,12 @@ export const UserComponent = ({ initialData, initialPagination }: Props) => {
       setPagination(pagination)
     }
   }
+
+  useEffect(() => {
+    if (error) {
+      getToastMessage(error, ToastType.Error)
+    }
+  }, [error])
 
   return (
     <Protected permission="LIST_USER">
@@ -125,13 +148,19 @@ export const UserComponent = ({ initialData, initialPagination }: Props) => {
               </button>
             </>
           )}
+          emptyState={
+            <div className="flex flex-col items-center">
+              <UserRoundCog size={40} className="text-gray-400 mb-4" />
+              <p className="text-gray-500">No users found</p>
+            </div>
+          }
         />
         <ConfirmModal
           isOpen={openConfirmModal}
           title="Confirm deletion"
-          message="Are you sure you want to delete this user?"
+          message={`Are you sure you want to delete user ${user?.name}?`}
           onCancel={() => setOpenConfirmModal(false)}
-          onConfirm={() => {}}
+          onConfirm={() => deleteUser(user)}
         />
       </div>
     </Protected>

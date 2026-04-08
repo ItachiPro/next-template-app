@@ -6,7 +6,6 @@ import { getUserSchema } from '@/app/lib/schemas'
 import { FormAction, ToastType, User } from '@/app/types'
 import { Eye, EyeOff } from 'lucide-react'
 import { UserService } from '@/app/services/user.service'
-import toast from 'react-hot-toast'
 import { UserResponse } from '@/app/types/types'
 import { getToastMessage } from '@/app/utils'
 
@@ -48,9 +47,8 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
           getToastMessage(data.message, ToastType.Success)
           onSuccess()
         }
-      } catch (error) {
-        console.log('ERROR SAVING USER: ', JSON.stringify(error, null, 2))
-        toast.error('Error saving user')
+      } catch (error: unknown) {
+        getToastMessage(String(error), ToastType.Error)
       }
     },
   })
@@ -131,9 +129,13 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
         type="button"
         onClick={handleSubmit}
         disabled={pending}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg"
+        className="w-full bg-blue-600 text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-70"
       >
-        {pending ? (mode === 'create' ? 'Saving...' : 'Updating...') : 'Save'}
+        {pending ? (
+          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        ) : (
+          'Save'
+        )}
       </button>
     </form>
   )

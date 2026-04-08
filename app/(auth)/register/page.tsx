@@ -7,6 +7,9 @@ import { useRouter } from 'next/navigation'
 import { useAuthContext } from '@/app/context'
 import { useForm } from '@/app/hooks'
 import { registerSchema } from '@/app/lib/schemas'
+import { getToastMessage } from '@/app/utils'
+import { ToastType } from '@/app/types'
+import { useAuthStore } from '@/app/store/useAuthStore'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
@@ -15,6 +18,8 @@ const cn = (...classes: Array<string | false | undefined | null>) => {
 const RegisterPage = () => {
   const { login } = useAuthContext()
   const router = useRouter()
+
+  const { setUser } = useAuthStore.getState()
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -28,11 +33,22 @@ const RegisterPage = () => {
     },
     schema: registerSchema,
     onSubmit: async (values) => {
-      const res = await AuthService.register(values)
+      try {
+        const res = await AuthService.register(values)
 
-      if (res.status === 201) {
-        login()
-        router.push('/dashboard')
+        if (res.status === 201) {
+          login()
+
+          const me = await AuthService.me()
+
+          setUser(me.data.data)
+
+          getToastMessage('Welcome', ToastType.Success)
+
+          router.push('/dashboard')
+        }
+      } catch (error: unknown) {
+        getToastMessage(String(error), ToastType.Error)
       }
     },
   })
