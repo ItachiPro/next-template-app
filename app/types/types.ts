@@ -1,18 +1,13 @@
-import { ApiSuccessResponse, PaginatedResponse } from './api'
-import { Permission, User } from './user'
-
-export type UserDTO = {
+export type User = {
+  id: number
   name: string
   email: string
-  password?: string | null
+  email_verified_at: string | null
+  created_at: string
+  updated_at: string
 }
 
-export type PermissionDTO = {
+export type Permission = {
+  id: number
   name: string
 }
-
-export type UserResponse = ApiSuccessResponse<PaginatedResponse<User>>
-
-export type PermissionResponse = ApiSuccessResponse<
-  PaginatedResponse<Permission>
->

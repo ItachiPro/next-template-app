@@ -1,12 +1,12 @@
 import api from '@/app/lib/axios'
-import { UserDTO } from '@/app/types/types'
 import {
+  UserDTO,
   DeleteParams,
   GetByIdParams,
   GetParams,
   SaveParams,
   UpdateParams,
-} from '@/app/types/api'
+} from '@/app/types'
 
 export const UserService = {
   async getUsers({ params, headers }: GetParams) {

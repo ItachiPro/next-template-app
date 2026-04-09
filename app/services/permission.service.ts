@@ -1,12 +1,12 @@
 import api from '@/app/lib/axios'
-import { PermissionDTO } from '@/app/types/types'
 import {
+  PermissionDTO,
   DeleteParams,
   GetByIdParams,
   GetParams,
   SaveParams,
   UpdateParams,
-} from '../types'
+} from '@/app/types'
 
 export const PermissionService = {
   async getPermissions({ params, headers }: GetParams) {

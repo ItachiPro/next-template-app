@@ -23,6 +23,11 @@ export type DeleteParams = RequestConfig & {
   id: number
 }
 
+export type ApiError = {
+  message: string
+  errors: string[]
+}
+
 export type ApiErrorResponse = {
   success: boolean
   message?: string

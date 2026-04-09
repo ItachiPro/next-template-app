@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios'
-import { ApiErrorResponse } from '../types'
+import { ApiErrorResponse } from '@/app/types'
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
@@ -39,11 +39,17 @@ instance.interceptors.response.use(
       } else {
         message = statusText
       }
+
+      return Promise.reject({
+        message,
+        errors: data.errors || [],
+      })
     }
 
-    console.log('AXIOS: ', JSON.stringify(error.response, null, 2))
-
-    return Promise.reject(message)
+    return Promise.reject({
+      message,
+      errors: [],
+    })
   },
 )
 

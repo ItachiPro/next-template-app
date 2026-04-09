@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { FormAction, Pagination, Permission } from '@/app/types'
 import { PermissionService } from '@/app/services/permission.service'
-import { PermissionResponse } from '@/app/types/types'
+import { PermissionResponse } from '@/app/types/dto'
 import { getPaginationData } from '@/app/utils'
 import { Protected } from '../Protected'
 import { DataTable } from '../DataTable'

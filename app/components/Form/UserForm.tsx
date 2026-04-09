@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { useForm } from '@/app/hooks'
 import { getUserSchema } from '@/app/lib/schemas'
-import { FormAction, ToastType, User } from '@/app/types'
+import { ApiError, FormAction, ToastType, User } from '@/app/types'
 import { Eye, EyeOff } from 'lucide-react'
 import { UserService } from '@/app/services/user.service'
-import { UserResponse } from '@/app/types/types'
+import { UserResponse } from '@/app/types/dto'
 import { getToastMessage } from '@/app/utils'
 
 type Props = {
@@ -18,7 +18,14 @@ type Props = {
 export const UserForm = ({ mode, user, onSuccess }: Props) => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
-  const { pending, getInputProps, getError, hasError, handleSubmit } = useForm({
+  const {
+    pending,
+    getInputProps,
+    getError,
+    hasError,
+    setBackendErrors,
+    handleSubmit,
+  } = useForm({
     initialValues: {
       name: user?.name || '',
       email: user?.email || '',
@@ -48,7 +55,15 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
           onSuccess()
         }
       } catch (error: unknown) {
-        getToastMessage(String(error), ToastType.Error)
+        const err = error as ApiError
+
+        if (err.errors) {
+          setBackendErrors(err.errors)
+
+          Object.values(err.errors)
+            .flat()
+            .forEach((msg) => getToastMessage(msg, ToastType.Error))
+        }
       }
     },
   })

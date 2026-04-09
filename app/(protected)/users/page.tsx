@@ -2,7 +2,7 @@ import { UserComponent } from '@/app/components'
 import { getAuthHeaders } from '@/app/lib/auth-headers'
 import { UserService } from '@/app/services/user.service'
 import { Pagination, User } from '@/app/types'
-import { UserResponse } from '@/app/types/types'
+import { UserResponse } from '@/app/types/dto'
 import { getPaginationData } from '@/app/utils'
 
 const UserPage = async () => {

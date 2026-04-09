@@ -2,7 +2,7 @@ import { PermissionComponent } from '@/app/components/Permission'
 import { getAuthHeaders } from '@/app/lib/auth-headers'
 import { PermissionService } from '@/app/services/permission.service'
 import { Pagination, Permission } from '@/app/types'
-import { PermissionResponse } from '@/app/types/types'
+import { PermissionResponse } from '@/app/types/dto'
 import { getPaginationData } from '@/app/utils'
 
 const PermissionPage = async () => {

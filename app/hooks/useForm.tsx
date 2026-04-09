@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { FormError } from '@/app/types'
 import { ZodType } from 'zod'
+import { FormError } from '@/app/types'
 import { mapZodErrorsToFormErrors } from '@/app/utils'
 
 type Props<T> = {
@@ -53,6 +53,25 @@ export const useForm = <T extends Record<string, unknown>>({
         ...(fieldError ? [fieldError] : []),
       ])
     }
+  }
+
+  const setBackendErrors = (
+    backendErrors: Record<string, string[]> | string[],
+  ) => {
+    const formattedErrors: FormError[] = Object.entries(backendErrors).map(
+      ([field, message]) => ({
+        field: [field],
+        message: message[0],
+      }),
+    )
+
+    setErrors((prev) => {
+      const filtered = prev.filter(
+        (e) => !formattedErrors.some((fe) => fe.field === e.field),
+      )
+
+      return [...filtered, ...formattedErrors]
+    })
   }
 
   const handleSubmit = async () => {
@@ -134,6 +153,7 @@ export const useForm = <T extends Record<string, unknown>>({
     handleSubmit,
     getError,
     hasError,
+    setBackendErrors,
     getInputProps,
     getCheckboxProps,
     getSelectProps,
