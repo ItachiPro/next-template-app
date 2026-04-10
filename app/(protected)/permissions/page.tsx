@@ -1,9 +1,10 @@
-import { PermissionComponent } from '@/app/components/Permission'
-import { getAuthHeaders } from '@/app/lib/auth-headers'
-import { PermissionService } from '@/app/services/permission.service'
-import { Pagination, Permission } from '@/app/types'
-import { PermissionResponse } from '@/app/types/dto'
-import { getPaginationData } from '@/app/utils'
+import { PermissionComponent } from '@/features/permission/components'
+import { getAuthHeaders } from '@/lib/auth-headers'
+import { PermissionService } from '@/features/permission/services/permission.service'
+import { Pagination } from '@/types'
+import { PermissionResponse } from '@/types/dto'
+import { getPaginationData } from '@/utils'
+import { Permission } from '@/features'
 
 const PermissionPage = async () => {
   const headers = await getAuthHeaders()

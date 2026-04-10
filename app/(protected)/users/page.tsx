@@ -1,9 +1,9 @@
-import { UserComponent } from '@/app/components'
-import { getAuthHeaders } from '@/app/lib/auth-headers'
-import { UserService } from '@/app/services/user.service'
-import { Pagination, User } from '@/app/types'
-import { UserResponse } from '@/app/types/dto'
-import { getPaginationData } from '@/app/utils'
+import { getAuthHeaders } from '@/lib/auth-headers'
+import { UserService } from '@/features/user/services/user.service'
+import { Pagination } from '@/types'
+import { UserResponse } from '@/types/dto'
+import { getPaginationData } from '@/utils'
+import { User, UserComponent } from '@/features'
 
 const UserPage = async () => {
   const headers = await getAuthHeaders()

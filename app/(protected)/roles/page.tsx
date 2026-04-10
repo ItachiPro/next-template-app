@@ -1,6 +1,6 @@
 'use client'
 
-import { Protected } from '@/app/components'
+import { Protected } from '@/components'
 
 const RolePage = () => {
   return (

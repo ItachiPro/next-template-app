@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { redirect } from 'next/navigation'
 import { useAuthContext } from '../context'
-import { Navbar, SideBar } from '../components'
+import { Navbar, SideBar } from '@/components'
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuthContext()

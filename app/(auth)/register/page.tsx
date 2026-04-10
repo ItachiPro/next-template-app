@@ -1,15 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { AuthService } from '@/app/services/auth.service'
+import { AuthService } from '@/services/auth.service'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthContext } from '@/app/context'
-import { useForm } from '@/app/hooks'
-import { registerSchema } from '@/app/lib/schemas'
-import { getToastMessage } from '@/app/utils'
-import { ToastType } from '@/app/types'
-import { useAuthStore } from '@/app/store/useAuthStore'
+import { useForm } from '@/hooks'
+import { registerSchema } from '@/lib/schemas'
+import { getToastMessage } from '@/utils'
+import { ToastType } from '@/types'
+import { useAuthStore } from '@/store/useAuthStore'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
