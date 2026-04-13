@@ -100,7 +100,7 @@ export const UserComponent = ({
               {can('ASSIGN_ROLE_USER') && (
                 <button
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
-                  onClick={() => handleOpenAssignRoleModal()}
+                  onClick={() => handleOpenAssignRoleModal(row)}
                 >
                   <UserRoundCog size={18} />
                 </button>

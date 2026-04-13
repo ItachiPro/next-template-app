@@ -47,7 +47,8 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
     setOpenConfirmModal(false)
   }
 
-  const handleOpenAssignRoleModal = () => {
+  const handleOpenAssignRoleModal = (user: User) => {
+    setUser(user ? user : null)
     setOpenAssignRoleModal(true)
   }
 
