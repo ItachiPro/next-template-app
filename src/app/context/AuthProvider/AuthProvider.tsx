@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { useAuthStore } from '../../store/useAuthStore'
 import { AuthService } from '@/services/auth.service'
+import { useAuthStore } from '@/store'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 type AuthContextType = {
   isAuthenticated: boolean

@@ -1,6 +1,5 @@
 export * from './Navbar'
-export * from './Protected'
-export * from './SideBar'
+export * from './Sidebar'
 export * from './DataTable'
 export * from './ConfirmModal'
 export * from './Modal'
