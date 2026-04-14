@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { AssignRoleForm } from './AssignRoleForm'
 import { User } from '../types'
 import { Role } from '@/features/role'
 import { RoleService } from '@/features/role/services'
 import { RoleResponse } from '@/types'
+import { useAuthStore } from '@/store'
 
 type Props = {
   open: boolean
@@ -15,7 +16,23 @@ type Props = {
 }
 
 export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
+  const userStore = useAuthStore((state) => state.user)
+
   const [roles, setRoles] = useState<Role[]>([])
+
+  const assignedRoles = useMemo(() => {
+    if (!userStore) {
+      return []
+    }
+
+    return userStore.roles
+  }, [userStore])
+
+  const availableRoles = useMemo(() => {
+    const assignedSet = new Set(assignedRoles)
+
+    return roles.filter((role) => !assignedSet.has(role.name))
+  }, [assignedRoles, roles])
 
   useEffect(() => {
     if (!user) {
@@ -35,6 +52,7 @@ export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
     }
 
     getRoles()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
 
   return (
@@ -45,6 +63,7 @@ export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
           onClose()
         }}
         roles={roles}
+        assignedRoles={assignedRoles}
       />
     </Modal>
   )
