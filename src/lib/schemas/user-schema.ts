@@ -1,4 +1,5 @@
-import z from 'zod'
+import z, { array } from 'zod'
+import { id } from 'zod/locales'
 
 export const getUserSchema = (isEdit: boolean) =>
   z.object({
@@ -9,4 +10,16 @@ export const getUserSchema = (isEdit: boolean) =>
       : z.string().min(8, 'Password must be at least 8 characters.'),
   })
 
+export const assignRoleSchema = z.object({
+  roles: z
+    .array(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+      }),
+    )
+    .min(1, 'At least one role is required.'),
+})
+
 export type UserInput = z.infer<ReturnType<typeof getUserSchema>>
+export type AssignRoleInput = z.infer<typeof assignRoleSchema>

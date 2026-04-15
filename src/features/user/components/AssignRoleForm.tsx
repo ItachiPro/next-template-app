@@ -1,10 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect } from 'react'
 import { Role } from '@/features/role'
 import { User } from '../types'
-import { MoveLeft, MoveRight } from 'lucide-react'
-import { SelectedColor, SelectList } from '@/components'
+import { DualListField } from '@/components'
+import { useForm } from '@/hooks'
+import { assignRoleSchema } from '@/lib/schemas'
 
 type Props = {
   user: User | null
@@ -19,82 +20,48 @@ export const AssignRoleForm = ({
   assignedRoles,
   roles,
 }: Props) => {
-  const [currentAssigned, setCurrentAssigned] =
-    useState<string[]>(assignedRoles)
+  const { form, setField, handleSubmit, getError } = useForm({
+    initialValues: {
+      roles: roles.filter((r) => assignedRoles.includes(r.name)),
+    },
+    schema: assignRoleSchema,
+    onSubmit: async (values) => {
+      console.log('ROLES: ', JSON.stringify(values, null, 2))
+    },
+  })
 
-  const [selectedAvailable, setSelectedAvailable] = useState<string[]>([])
-  const [selectedAssigned, setSelectedAssigned] = useState<string[]>([])
+  useEffect(() => {
+    const assignedSet = new Set(assignedRoles)
 
-  const availableRoles = useMemo(() => {
-    const assignedSet = new Set(currentAssigned)
+    const mappedRoles = roles.filter((r) => assignedSet.has(r.name))
 
-    return roles.filter((role) => !assignedSet.has(role.name))
-  }, [roles, currentAssigned])
-
-  const availableRolesMapped = availableRoles.map((r) => r.name)
-
-  const toggleSelection = (
-    value: string,
-    list: string[],
-    setList: React.Dispatch<React.SetStateAction<string[]>>,
-  ) => {
-    if (list.includes(value)) {
-      setList(list.filter((item) => item !== value))
-    } else {
-      setList([...list, value])
-    }
-  }
-
-  const moveToAssigned = () => {
-    setCurrentAssigned((prev) => [...prev, ...selectedAvailable])
-    setSelectedAvailable([])
-  }
-
-  const moveToAvailable = () => {
-    setCurrentAssigned((prev) =>
-      prev.filter((role) => !selectedAssigned.includes(role)),
-    )
-    setSelectedAssigned([])
-  }
+    setField('roles', mappedRoles)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roles, assignedRoles])
 
   return (
-    <div className="flex gap-6 items-center">
-      <SelectList
-        title="Available roles"
-        itemList={availableRolesMapped}
-        selected={selectedAvailable}
-        selectedColor={SelectedColor.Blue}
-        onToggle={(value) => {
-          toggleSelection(value, selectedAvailable, setSelectedAvailable)
-        }}
+    <div>
+      <DualListField
+        items={roles}
+        value={form.roles}
+        onChange={(roles) => setField('roles', roles)}
+        getId={(role) => role.id}
+        getLabel={(role) => role.name}
+        leftTitle="Available roles"
+        rightTitle="Assigned roles"
       />
 
-      <div className="flex flex-col gap-2">
-        <button
-          onClick={moveToAssigned}
-          disabled={selectedAvailable.length === 0}
-          className={`px-3 py-1 border rounded ${selectedAvailable.length > 0 ? 'text-blue-600' : 'text-gray-600'} disabled:opacity-50`}
-        >
-          <MoveRight />
+      <div className="flex justify-end gap-2 px-2">
+        <button className="mt-4 px-4 py-2 bg-red-600 text-white rounded">
+          Cancel
         </button>
         <button
-          onClick={moveToAvailable}
-          disabled={selectedAssigned.length === 0}
-          className={`px-3 py-1 border rounded ${selectedAssigned.length > 0 ? 'text-red-600' : 'text-gray-600'} disabled:opacity-50`}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+          onClick={handleSubmit}
         >
-          <MoveLeft />
+          Save
         </button>
       </div>
-
-      <SelectList
-        title="Assigned roles"
-        itemList={currentAssigned}
-        selected={selectedAssigned}
-        selectedColor={SelectedColor.Red}
-        onToggle={(value) => {
-          toggleSelection(value, selectedAssigned, setSelectedAssigned)
-        }}
-      />
     </div>
   )
 }

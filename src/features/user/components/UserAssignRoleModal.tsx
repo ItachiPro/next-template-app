@@ -28,12 +28,6 @@ export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
     return userStore.roles
   }, [userStore])
 
-  const availableRoles = useMemo(() => {
-    const assignedSet = new Set(assignedRoles)
-
-    return roles.filter((role) => !assignedSet.has(role.name))
-  }, [assignedRoles, roles])
-
   useEffect(() => {
     if (!user) {
       return
