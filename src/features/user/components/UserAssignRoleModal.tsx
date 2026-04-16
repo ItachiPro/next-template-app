@@ -6,8 +6,7 @@ import { AssignRoleForm } from './AssignRoleForm'
 import { User } from '../types'
 import { Role } from '@/features/role'
 import { RoleService } from '@/features/role/services'
-import { RoleResponse } from '@/types'
-import { useAuthStore } from '@/store'
+import { RolesResponse } from '@/types'
 
 type Props = {
   open: boolean
@@ -16,17 +15,20 @@ type Props = {
 }
 
 export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
-  const userStore = useAuthStore((state) => state.user)
-
   const [roles, setRoles] = useState<Role[]>([])
 
   const assignedRoles = useMemo(() => {
-    if (!userStore) {
+    if (!user) {
       return []
     }
 
-    return userStore.roles
-  }, [userStore])
+    const roles =
+      user.roles && user.roles.length > 0
+        ? user.roles.map((role) => role.name)
+        : []
+
+    return roles
+  }, [user])
 
   useEffect(() => {
     if (!user) {
@@ -39,7 +41,7 @@ export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
       })
 
       if (res.status === 200) {
-        const data: RoleResponse = res.data
+        const data: RolesResponse = res.data
 
         setRoles(data.data)
       }
@@ -53,11 +55,12 @@ export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
     <Modal open={open} onClose={onClose} title="Assign roles">
       <AssignRoleForm
         user={user}
+        roles={roles}
+        assignedRoles={assignedRoles}
         onSuccess={() => {
           onClose()
         }}
-        roles={roles}
-        assignedRoles={assignedRoles}
+        onClose={onClose}
       />
     </Modal>
   )

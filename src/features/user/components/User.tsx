@@ -9,10 +9,10 @@ import { useAuth } from '@/hooks'
 import { useUser } from '../hooks'
 import { UserFormModal } from './UserFormModal'
 import { UserAssignRoleModal } from './UserAssignRoleModal'
-import { User } from '../types'
+import { UserData } from '../types'
 
 type Props = {
-  initialData: User[]
+  initialData: UserData[]
   initialPagination: Pagination
   error?: string | null
 }
@@ -27,6 +27,7 @@ export const UserComponent = ({
   const {
     users,
     user,
+    userWithRoles,
     pagination,
     openModal,
     openConfirmModal,
@@ -76,7 +77,7 @@ export const UserComponent = ({
 
       <UserAssignRoleModal
         open={openAssignRoleModal}
-        user={user}
+        user={userWithRoles}
         onClose={handleCloseAssignRoleModal}
       />
 

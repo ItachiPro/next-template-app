@@ -1,5 +1,4 @@
-import z, { array } from 'zod'
-import { id } from 'zod/locales'
+import z from 'zod'
 
 export const getUserSchema = (isEdit: boolean) =>
   z.object({

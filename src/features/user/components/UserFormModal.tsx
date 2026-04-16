@@ -3,12 +3,12 @@
 import { FormAction } from '@/types'
 import { Modal } from '@/components/ui/Modal'
 import { UserForm } from './UserForm'
-import { User } from '../types'
+import { UserData } from '../types'
 
 type Props = {
   open: boolean
   mode: FormAction
-  user?: User | null
+  user?: UserData | null
   onClose: () => void
   onSuccess: () => void
 }

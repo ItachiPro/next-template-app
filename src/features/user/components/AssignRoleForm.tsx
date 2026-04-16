@@ -9,18 +9,20 @@ import { assignRoleSchema } from '@/lib/schemas'
 
 type Props = {
   user: User | null
-  onSuccess: () => void
   assignedRoles: string[]
   roles: Role[]
+  onSuccess: () => void
+  onClose: () => void
 }
 
 export const AssignRoleForm = ({
   user,
-  onSuccess,
   assignedRoles,
   roles,
+  onSuccess,
+  onClose,
 }: Props) => {
-  const { form, setField, handleSubmit, getError } = useForm({
+  const { form, setField, handleSubmit, getError, hasError } = useForm({
     initialValues: {
       roles: roles.filter((r) => assignedRoles.includes(r.name)),
     },
@@ -49,10 +51,20 @@ export const AssignRoleForm = ({
         getLabel={(role) => role.name}
         leftTitle="Available roles"
         rightTitle="Assigned roles"
+        hasError={hasError('roles')}
       />
 
+      {getError('roles') && (
+        <p className="text-xs text-red-500 flex justify-end mt-1">
+          {getError('roles')}
+        </p>
+      )}
+
       <div className="flex justify-end gap-2 px-2">
-        <button className="mt-4 px-4 py-2 bg-red-600 text-white rounded">
+        <button
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded"
+          onClick={onClose}
+        >
           Cancel
         </button>
         <button

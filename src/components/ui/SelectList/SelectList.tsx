@@ -8,6 +8,7 @@ type Props = {
   itemList: string[]
   selected: string[]
   selectedColor?: SelectedColor
+  hasError?: boolean
   onToggle: (value: string) => void
 }
 
@@ -16,6 +17,7 @@ export const SelectList = ({
   itemList,
   selected,
   selectedColor,
+  hasError = false,
   onToggle,
 }: Props) => {
   const selectedStyles =
@@ -24,7 +26,9 @@ export const SelectList = ({
       : 'bg-red-100 text-red-600'
 
   return (
-    <div className="w-1/2 border rounded p-4 h-64 flex flex-col text-gray-500">
+    <div
+      className={`w-1/2 border rounded p-4 h-64 flex flex-col ${hasError ? 'text-red-500' : 'text-gray-500'}`}
+    >
       <h3 className="font-bold mb-2 whitespace-nowrap">{title}</h3>
       <ul className="overflow-y-auto flex-1">
         {itemList.map((item, index) => {

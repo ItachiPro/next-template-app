@@ -12,6 +12,7 @@ type Props<T> = {
   getLabel: (item: T) => string
   leftTitle?: string
   rightTitle?: string
+  hasError: boolean
 }
 
 export const DualListField = <T,>({
@@ -22,6 +23,7 @@ export const DualListField = <T,>({
   getLabel,
   leftTitle = 'Available',
   rightTitle = 'Selected',
+  hasError = false,
 }: Props<T>) => {
   const [selectedLeft, setSelectedLeft] = useState<(string | number)[]>([])
   const [selectedRight, setSelectedRight] = useState<(string | number)[]>([])
@@ -104,6 +106,7 @@ export const DualListField = <T,>({
           .filter((item) => selectedRight.includes(getId(item)))
           .map(getLabel)}
         selectedColor={SelectedColor.Red}
+        hasError={hasError}
         onToggle={(label) => {
           const item = value.find((i) => getLabel(i) === label)
           if (!item) return

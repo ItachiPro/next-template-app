@@ -6,13 +6,13 @@ import { getUserSchema } from '@/lib/schemas'
 import { ApiError, FormAction, ToastType } from '@/types'
 import { Eye, EyeOff } from 'lucide-react'
 import { UserService } from '@/features/user/services/user.service'
-import { UserResponse } from '@/types/dto'
+import { UsersPaginatedResponse } from '@/types/dto'
 import { getToastMessage } from '@/utils'
-import { User } from '../types'
+import { UserData } from '../types'
 
 type Props = {
   mode: FormAction
-  user?: User | null
+  user?: UserData | null
   onSuccess: () => void
 }
 
@@ -51,7 +51,7 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
           : await UserService.saveUser({ data: payload })
 
         if (res.status === 201 || res.status === 200) {
-          const data: UserResponse = res.data
+          const data: UsersPaginatedResponse = res.data
           getToastMessage(data.message, ToastType.Success)
           onSuccess()
         }
