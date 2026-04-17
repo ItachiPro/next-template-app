@@ -2,7 +2,7 @@ import { PermissionComponent } from '@/features/permission/components'
 import { getAuthHeaders } from '@/lib/auth-headers'
 import { PermissionService } from '@/features/permission/services/permission.service'
 import { Pagination } from '@/types'
-import { PermissionResponse } from '@/types/dto'
+import { PermissionsPaginatedResponse } from '@/types/dto'
 import { getPaginationData } from '@/utils'
 import { Permission } from '@/features'
 
@@ -22,7 +22,7 @@ const PermissionPage = async () => {
     const res = await PermissionService.getPermissions({ headers })
 
     if (res.status === 200) {
-      const data: PermissionResponse = res.data
+      const data: PermissionsPaginatedResponse = res.data
 
       permissions = data.data.data
 

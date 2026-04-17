@@ -6,6 +6,9 @@ import { User } from '../types'
 import { DualListField } from '@/components'
 import { useForm } from '@/hooks'
 import { assignRoleSchema } from '@/lib/schemas'
+import { UserService } from '../services'
+import { ApiError, ToastType, UserResponse } from '@/types'
+import { getToastMessage } from '@/utils'
 
 type Props = {
   user: User | null
@@ -22,15 +25,45 @@ export const AssignRoleForm = ({
   onSuccess,
   onClose,
 }: Props) => {
-  const { form, setField, handleSubmit, getError, hasError } = useForm({
-    initialValues: {
-      roles: roles.filter((r) => assignedRoles.includes(r.name)),
-    },
-    schema: assignRoleSchema,
-    onSubmit: async (values) => {
-      console.log('ROLES: ', JSON.stringify(values, null, 2))
-    },
-  })
+  const { form, setField, handleSubmit, getError, hasError, setBackendErrors } =
+    useForm({
+      initialValues: {
+        roles: roles.filter((r) => assignedRoles.includes(r.name)),
+      },
+      schema: assignRoleSchema,
+      onSubmit: async (values) => {
+        if (!user) {
+          return
+        }
+
+        try {
+          const roles = values.roles.map((role) => role.id)
+
+          const res = await UserService.assignRoles({
+            id: user.id,
+            data: {
+              roles: roles,
+            },
+          })
+
+          if (res.status === 200) {
+            const data: UserResponse = res.data
+            getToastMessage(data.message, ToastType.Success)
+            onSuccess()
+          }
+        } catch (error: unknown) {
+          const err = error as ApiError
+
+          if (err.errors) {
+            setBackendErrors(err.errors)
+
+            Object.values(err.errors)
+              .flat()
+              .forEach((msg) => getToastMessage(msg, ToastType.Error))
+          }
+        }
+      },
+    })
 
   useEffect(() => {
     const assignedSet = new Set(assignedRoles)

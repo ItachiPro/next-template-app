@@ -7,8 +7,20 @@ export type UserDTO = {
   password?: string | null
 }
 
+export type UserRoleDTO = {
+  roles: number[]
+}
+
+export type UserPermissionDTO = {
+  permissions: number[]
+}
+
 export type RoleDTO = {
   name: string
+}
+
+export type RolePermissionDTO = {
+  permissions: number[]
 }
 
 export type PermissionDTO = {
@@ -23,6 +35,8 @@ export type RoleResponse = ApiSuccessResponse<Role>
 export type RolesResponse = ApiSuccessResponse<Role[]>
 export type RolesPaginatedResponse = ApiSuccessResponse<PaginatedResponse<Role>>
 
-export type PermissionResponse = ApiSuccessResponse<
+export type PermissionResponse = ApiSuccessResponse<Permission>
+export type PermissionsResponse = ApiSuccessResponse<Permission[]>
+export type PermissionsPaginatedResponse = ApiSuccessResponse<
   PaginatedResponse<Permission>
 >

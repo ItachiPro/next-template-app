@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Pencil, Trash } from 'lucide-react'
 import { FormAction, Pagination } from '@/types'
 import { PermissionService } from '@/features/permission/services/permission.service'
-import { PermissionResponse } from '@/types/dto'
+import { PermissionsPaginatedResponse } from '@/types/dto'
 import { getPaginationData } from '@/utils'
 import { DataTable, Protected } from '@/components'
 import { Permission } from '../types'
@@ -35,7 +35,7 @@ export const PermissionComponent = ({
     const res = await PermissionService.getPermissions({ params: { page } })
 
     if (res.status === 200) {
-      const data: PermissionResponse = res.data
+      const data: PermissionsPaginatedResponse = res.data
 
       setPermissions(data.data.data)
 

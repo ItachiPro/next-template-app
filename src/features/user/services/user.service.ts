@@ -6,6 +6,8 @@ import {
   GetParams,
   SaveParams,
   UpdateParams,
+  UserRoleDTO,
+  UserPermissionDTO,
 } from '@/types'
 
 export const UserService = {
@@ -30,6 +32,20 @@ export const UserService = {
 
   async updateUser({ id, data, headers }: UpdateParams<UserDTO>) {
     const response = await api.put(`/user/${id}`, data, { headers })
+    return response
+  },
+
+  async assignRoles({ id, data, headers }: UpdateParams<UserRoleDTO>) {
+    const response = await api.put(`/user/${id}/roles`, data, { headers })
+    return response
+  },
+
+  async assignPermissions({
+    id,
+    data,
+    headers,
+  }: UpdateParams<UserPermissionDTO>) {
+    const response = await api.put(`/user/${id}/permissions`, data, headers)
     return response
   },
 
