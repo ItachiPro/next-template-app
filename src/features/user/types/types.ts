@@ -1,3 +1,4 @@
+import { Permission } from '@/features/permission'
 import { Role } from '@/features/role'
 
 export type User = {
@@ -8,6 +9,7 @@ export type User = {
   created_at: string
   updated_at: string
   roles?: Role[]
+  permission?: Permission[]
 }
 
 export type UserData = {

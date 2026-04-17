@@ -10,6 +10,7 @@ import { useUser } from '../hooks'
 import { UserFormModal } from './UserFormModal'
 import { UserAssignRoleModal } from './UserAssignRoleModal'
 import { UserData } from '../types'
+import { UserAssignPermissionModal } from './UserAssignPermissionModal'
 
 type Props = {
   initialData: UserData[]
@@ -32,13 +33,15 @@ export const UserComponent = ({
     openModal,
     openConfirmModal,
     openAssignRoleModal,
+    openAssignPermissionModal,
     mode,
     handleOpenModal,
     handleCloseModal,
     handleOpenConfirmModal,
     handleCloseConfirmModal,
-    handleOpenAssignRoleModal,
+    handleOpenAssignModal,
     handleCloseAssignRoleModal,
+    handleCloseAssignPermissionModal,
     getUsers,
     deleteUser,
   } = useUser({
@@ -81,6 +84,12 @@ export const UserComponent = ({
         onClose={handleCloseAssignRoleModal}
       />
 
+      <UserAssignPermissionModal
+        open={openAssignPermissionModal}
+        user={userWithRoles}
+        onClose={handleCloseAssignPermissionModal}
+      />
+
       <div className="mt-6">
         <DataTable
           headers={[
@@ -101,7 +110,7 @@ export const UserComponent = ({
               {can('ASSIGN_ROLE_USER') && (
                 <button
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
-                  onClick={() => handleOpenAssignRoleModal(row)}
+                  onClick={() => handleOpenAssignModal(row, true)}
                 >
                   <UserRoundCog size={18} />
                 </button>
@@ -110,7 +119,7 @@ export const UserComponent = ({
               {can('ASSIGN_PERMISSION_USER') && (
                 <button
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition"
-                  onClick={() => {}}
+                  onClick={() => handleOpenAssignModal(row, false)}
                 >
                   <UserRoundKey size={18} />
                 </button>

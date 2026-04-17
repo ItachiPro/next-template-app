@@ -54,7 +54,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
     setOpenConfirmModal(false)
   }
 
-  const handleOpenAssignRoleModal = async (user: UserData) => {
+  const handleOpenAssignModal = async (user: UserData, isRole: boolean) => {
     try {
       const res = await UserService.getUser({
         id: user.id,
@@ -64,19 +64,20 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
         const data: UserResponse = res.data
 
         setUserWithRoles(data.data)
-        setOpenAssignRoleModal(true)
+
+        if (isRole) {
+          setOpenAssignRoleModal(true)
+        } else {
+          setOpenAssignPermissionModal(true)
+        }
       }
     } catch {
-      getToastMessage('Error getting user', ToastType.Error)
+      getToastMessage('Error getting user.', ToastType.Error)
     }
   }
 
   const handleCloseAssignRoleModal = () => {
     setOpenAssignRoleModal(false)
-  }
-
-  const handleOpenAssignPermissionModal = () => {
-    setOpenAssignPermissionModal(true)
   }
 
   const handleCloseAssignPermissionModal = () => {
@@ -94,6 +95,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
       const users: UserData[] = data.data.data.map((user) => ({
         ...user,
         roles: user.roles?.length,
+        permission: user.permission?.length,
       }))
 
       setUsers(users)
@@ -132,15 +134,16 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
     openModal,
     openConfirmModal,
     openAssignRoleModal,
+    setOpenAssignRoleModal,
     openAssignPermissionModal,
+    setOpenAssignPermissionModal,
     mode,
     handleOpenModal,
     handleCloseModal,
     handleOpenConfirmModal,
     handleCloseConfirmModal,
-    handleOpenAssignRoleModal,
+    handleOpenAssignModal,
     handleCloseAssignRoleModal,
-    handleOpenAssignPermissionModal,
     handleCloseAssignPermissionModal,
     getUsers,
     deleteUser,

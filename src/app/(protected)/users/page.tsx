@@ -3,7 +3,7 @@ import { UserService } from '@/features/user/services/user.service'
 import { Pagination } from '@/types'
 import { UsersPaginatedResponse } from '@/types/dto'
 import { getPaginationData } from '@/utils'
-import { User, UserComponent, UserData } from '@/features'
+import { UserComponent, UserData } from '@/features'
 
 const UserPage = async () => {
   const headers = await getAuthHeaders()
@@ -27,6 +27,7 @@ const UserPage = async () => {
       users = data.data.data.map((user) => ({
         ...user,
         roles: user.roles?.length,
+        permission: user.permission?.length,
       }))
 
       pagination = getPaginationData(data.data)

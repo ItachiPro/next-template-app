@@ -1,5 +1,7 @@
 export * from './User'
 export * from './UserAssignRoleModal'
+export * from './UserAssignPermissionModal'
 export * from './UserFormModal'
 export * from './AssignRoleForm'
+export * from './AssignPermissionForm'
 export * from './UserForm'

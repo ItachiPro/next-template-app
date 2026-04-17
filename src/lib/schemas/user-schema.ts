@@ -20,5 +20,17 @@ export const assignRoleSchema = z.object({
     .min(1, 'At least one role is required.'),
 })
 
+export const assignPermissionSchema = z.object({
+  permissions: z
+    .array(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+      }),
+    )
+    .min(1, 'At least one permission is required.'),
+})
+
 export type UserInput = z.infer<ReturnType<typeof getUserSchema>>
 export type AssignRoleInput = z.infer<typeof assignRoleSchema>
+export type AssignPermissionInput = z.infer<typeof assignPermissionSchema>
