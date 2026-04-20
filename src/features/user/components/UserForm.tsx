@@ -7,7 +7,7 @@ import { ApiError, FormAction, ToastType } from '@/types'
 import { Eye, EyeOff } from 'lucide-react'
 import { UserService } from '@/features/user/services/user.service'
 import { UsersPaginatedResponse } from '@/types/dto'
-import { getToastMessage } from '@/utils'
+import { getToastMessage, mapErrors } from '@/utils'
 import { UserData } from '../types'
 
 type Props = {
@@ -58,13 +58,7 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
       } catch (error: unknown) {
         const err = error as ApiError
 
-        if (err.errors) {
-          setBackendErrors(err.errors)
-
-          Object.values(err.errors)
-            .flat()
-            .forEach((msg) => getToastMessage(msg, ToastType.Error))
-        }
+        mapErrors(err.errors)
       }
     },
   })

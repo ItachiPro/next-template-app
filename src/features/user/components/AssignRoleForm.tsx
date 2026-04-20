@@ -8,7 +8,7 @@ import { useForm } from '@/hooks'
 import { assignRoleSchema } from '@/lib/schemas'
 import { UserService } from '../services'
 import { ApiError, ToastType, UserResponse } from '@/types'
-import { getToastMessage } from '@/utils'
+import { getToastMessage, mapErrors } from '@/utils'
 
 type Props = {
   user: User | null
@@ -54,13 +54,7 @@ export const AssignRoleForm = ({
         } catch (error: unknown) {
           const err = error as ApiError
 
-          if (err.errors) {
-            setBackendErrors(err.errors)
-
-            Object.values(err.errors)
-              .flat()
-              .forEach((msg) => getToastMessage(msg, ToastType.Error))
-          }
+          mapErrors(err.errors)
         }
       },
     })

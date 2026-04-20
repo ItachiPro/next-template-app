@@ -23,12 +23,32 @@ export const UserAssignPermissionModal = ({ open, user, onClose }: Props) => {
     }
 
     const permissions =
-      user.permission && user.permission.length > 0
-        ? user.permission.map((permission) => permission.name)
+      user.permissions && user.permissions.length > 0
+        ? user.permissions.map((permission) => permission.name)
         : []
 
     return permissions
   }, [user])
+
+  const effectivePermissionIds = useMemo(() => {
+    if (!user) {
+      return new Set<number>()
+    }
+
+    const ids = new Set<number>()
+
+    user.roles?.forEach((role) => {
+      role.permissions?.forEach((p) => {
+        if (p.id) ids.add(p.id)
+      })
+    })
+
+    return ids
+  }, [user])
+
+  const availablePermissions = useMemo(() => {
+    return permissions.filter((p) => !effectivePermissionIds.has(Number(p.id)))
+  }, [permissions, effectivePermissionIds])
 
   useEffect(() => {
     if (!user) {
@@ -55,7 +75,7 @@ export const UserAssignPermissionModal = ({ open, user, onClose }: Props) => {
     <Modal open={open} onClose={onClose} title="Assign permissions">
       <AssignPermissionForm
         user={user}
-        permissions={permissions}
+        permissions={availablePermissions}
         assignedPermissions={assignedPermissions}
         onSuccess={() => {
           onClose()

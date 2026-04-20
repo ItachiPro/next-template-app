@@ -45,7 +45,7 @@ export const UserService = {
     data,
     headers,
   }: UpdateParams<UserPermissionDTO>) {
-    const response = await api.put(`/user/${id}/permissions`, data, headers)
+    const response = await api.put(`/user/${id}/permissions`, data, { headers })
     return response
   },
 

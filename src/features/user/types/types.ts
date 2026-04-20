@@ -9,7 +9,7 @@ export type User = {
   created_at: string
   updated_at: string
   roles?: Role[]
-  permission?: Permission[]
+  permissions?: Permission[]
 }
 
 export type UserData = {

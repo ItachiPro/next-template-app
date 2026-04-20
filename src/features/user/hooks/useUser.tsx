@@ -95,7 +95,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
       const users: UserData[] = data.data.data.map((user) => ({
         ...user,
         roles: user.roles?.length,
-        permission: user.permission?.length,
+        permission: user.permissions?.length,
       }))
 
       setUsers(users)

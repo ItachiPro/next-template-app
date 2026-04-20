@@ -6,7 +6,7 @@ import { User } from '../types'
 import { useForm } from '@/hooks'
 import { assignPermissionSchema } from '@/lib/schemas'
 import { ApiError, ToastType, UserResponse } from '@/types'
-import { getToastMessage } from '@/utils'
+import { getToastMessage, mapErrors } from '@/utils'
 import { UserService } from '../services'
 import { DualListField } from '@/components'
 
@@ -58,13 +58,7 @@ export const AssignPermissionForm = ({
         } catch (error: unknown) {
           const err = error as ApiError
 
-          if (err.errors) {
-            setBackendErrors(err.errors)
-
-            Object.values(err.errors)
-              .flat()
-              .forEach((msg) => getToastMessage(msg, ToastType.Error))
-          }
+          mapErrors(err.errors)
         }
       },
     })

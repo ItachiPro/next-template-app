@@ -27,7 +27,7 @@ const UserPage = async () => {
       users = data.data.data.map((user) => ({
         ...user,
         roles: user.roles?.length,
-        permission: user.permission?.length,
+        permission: user.permissions?.length,
       }))
 
       pagination = getPaginationData(data.data)
