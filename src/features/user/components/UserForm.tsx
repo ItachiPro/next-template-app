@@ -58,7 +58,11 @@ export const UserForm = ({ mode, user, onSuccess }: Props) => {
       } catch (error: unknown) {
         const err = error as ApiError
 
-        mapErrors(err.errors)
+        if (typeof err.errors === 'object') {
+          setBackendErrors(err.errors)
+        }
+
+        mapErrors(err)
       }
     },
   })

@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation'
 import { useAuthContext } from '@/app/context'
 import { useForm } from '@/hooks'
 import { registerSchema } from '@/lib/schemas'
-import { getToastMessage } from '@/utils'
-import { ToastType } from '@/types'
+import { getToastMessage, mapErrors } from '@/utils'
+import { ApiError, ToastType } from '@/types'
 import { useAuthStore } from '@/store/useAuthStore'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
@@ -24,7 +24,14 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const { pending, getInputProps, getError, hasError, handleSubmit } = useForm({
+  const {
+    pending,
+    getInputProps,
+    getError,
+    hasError,
+    handleSubmit,
+    setBackendErrors,
+  } = useForm({
     initialValues: {
       name: '',
       email: '',
@@ -48,7 +55,13 @@ const RegisterPage = () => {
           router.push('/dashboard')
         }
       } catch (error: unknown) {
-        getToastMessage(String(error), ToastType.Error)
+        const err = error as ApiError
+
+        if (typeof err.errors === 'object') {
+          setBackendErrors(err.errors)
+        }
+
+        mapErrors(err)
       }
     },
   })

@@ -58,7 +58,7 @@ export const AssignPermissionForm = ({
         } catch (error: unknown) {
           const err = error as ApiError
 
-          mapErrors(err.errors)
+          mapErrors(err)
         }
       },
     })

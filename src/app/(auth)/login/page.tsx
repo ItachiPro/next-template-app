@@ -8,8 +8,8 @@ import { useAuthContext } from '@/app/context'
 import { useForm } from '@/hooks'
 import { loginSchema } from '@/lib/schemas'
 import { useAuthStore } from '@/store/useAuthStore'
-import { getToastMessage } from '@/utils'
-import { ToastType } from '@/types'
+import { getToastMessage, mapErrors } from '@/utils'
+import { ApiError, ToastType } from '@/types'
 
 const cn = (...classes: Array<string | false | undefined | null>) => {
   return classes.filter(Boolean).join(' ')
@@ -30,6 +30,7 @@ const LoginPage = () => {
     getError,
     hasError,
     handleSubmit,
+    setBackendErrors,
   } = useForm({
     initialValues: {
       email: '',
@@ -53,7 +54,13 @@ const LoginPage = () => {
           router.push('dashboard')
         }
       } catch (error: unknown) {
-        getToastMessage(String(error), ToastType.Error)
+        const err = error as ApiError
+
+        if (typeof err.errors === 'object') {
+          setBackendErrors(err.errors)
+        }
+
+        mapErrors(err)
       }
     },
   })
