@@ -2,7 +2,7 @@ import { getAuthHeaders } from '@/lib/auth-headers'
 import { UserService } from '@/features/user/services/user.service'
 import { Pagination } from '@/types'
 import { UsersPaginatedResponse } from '@/types/dto'
-import { getPaginationData } from '@/utils'
+import { dateFormatted, getPaginationData } from '@/utils'
 import { UserComponent, UserData } from '@/features'
 
 const UserPage = async () => {
@@ -26,6 +26,8 @@ const UserPage = async () => {
 
       users = data.data.data.map((user) => ({
         ...user,
+        created_at: dateFormatted(user.created_at),
+        updated_at: dateFormatted(user.updated_at),
         roles: user.roles?.length,
         permission: user.permissions?.length,
       }))

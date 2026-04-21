@@ -8,7 +8,7 @@ import {
   UserResponse,
   UsersPaginatedResponse,
 } from '@/types'
-import { getPaginationData, getToastMessage } from '@/utils'
+import { dateFormatted, getPaginationData, getToastMessage } from '@/utils'
 import { UserService } from '../services'
 import { User, UserData } from '../types'
 
@@ -94,6 +94,8 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
 
       const users: UserData[] = data.data.data.map((user) => ({
         ...user,
+        created_at: dateFormatted(user.created_at),
+        updated_at: dateFormatted(user.updated_at),
         roles: user.roles?.length,
         permission: user.permissions?.length,
       }))

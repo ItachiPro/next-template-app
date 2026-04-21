@@ -101,6 +101,14 @@ export const UserComponent = ({
               label: 'Email',
               value: 'email',
             },
+            {
+              label: 'Created',
+              value: 'created_at',
+            },
+            {
+              label: 'Updated',
+              value: 'updated_at',
+            },
           ]}
           data={users}
           pagination={pagination}

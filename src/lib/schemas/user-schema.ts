@@ -21,14 +21,12 @@ export const assignRoleSchema = z.object({
 })
 
 export const assignPermissionSchema = z.object({
-  permissions: z
-    .array(
-      z.object({
-        id: z.number(),
-        name: z.string(),
-      }),
-    )
-    .min(1, 'At least one permission is required.'),
+  permissions: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+    }),
+  ),
 })
 
 export type UserInput = z.infer<ReturnType<typeof getUserSchema>>
