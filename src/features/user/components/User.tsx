@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Pencil, Plus, Trash, UserRoundCog, UserRoundKey } from 'lucide-react'
 import { Pagination, ToastType } from '@/types'
 import { getToastMessage } from '@/utils'
-import { DataTable, ConfirmModal, Protected } from '@/components'
+import { DataTable, ConfirmModal, Protected, EmptyData } from '@/components'
 import { useAuth } from '@/hooks'
 import { useUser } from '../hooks'
 import { UserFormModal } from './UserFormModal'
@@ -152,12 +152,7 @@ export const UserComponent = ({
               )}
             </>
           )}
-          emptyState={
-            <div className="flex flex-col items-center">
-              <UserRoundCog size={40} className="text-gray-400 mb-4" />
-              <p className="text-gray-500">No users found</p>
-            </div>
-          }
+          emptyState={<EmptyData message={'No users found'} />}
         />
         <ConfirmModal
           isOpen={openConfirmModal}

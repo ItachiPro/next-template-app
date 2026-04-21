@@ -2,13 +2,19 @@
 
 import { useState } from 'react'
 import {
+  ApiError,
   FormAction,
   Pagination,
   ToastType,
   UserResponse,
   UsersPaginatedResponse,
 } from '@/types'
-import { dateFormatted, getPaginationData, getToastMessage } from '@/utils'
+import {
+  dateFormatted,
+  getPaginationData,
+  getToastMessage,
+  mapErrors,
+} from '@/utils'
 import { UserService } from '../services'
 import { User, UserData } from '../types'
 
@@ -117,16 +123,14 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
         getToastMessage('User deleted successfully', ToastType.Success)
         getUsers()
       }
-    } catch {
-      getToastMessage('Error deleting user', ToastType.Error)
+    } catch (error: unknown) {
+      const err = error as ApiError
+
+      mapErrors(err)
     }
 
     setOpenConfirmModal(false)
   }
-
-  const assignRoles = async () => {}
-
-  const assignPermissions = async () => {}
 
   return {
     users,
@@ -149,7 +153,5 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
     handleCloseAssignPermissionModal,
     getUsers,
     deleteUser,
-    assignRoles,
-    assignPermissions,
   }
 }

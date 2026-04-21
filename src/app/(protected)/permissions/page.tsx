@@ -3,13 +3,14 @@ import { getAuthHeaders } from '@/lib/auth-headers'
 import { PermissionService } from '@/features/permission/services/permission.service'
 import { Pagination } from '@/types'
 import { PermissionsPaginatedResponse } from '@/types/dto'
-import { getPaginationData } from '@/utils'
+import { dateFormatted, getPaginationData } from '@/utils'
 import { Permission } from '@/features'
 
 const PermissionPage = async () => {
   const headers = await getAuthHeaders()
 
   let permissions: Permission[] = []
+  let errorMessage: string | null = null
 
   let pagination: Pagination = {
     from: null,
@@ -24,18 +25,23 @@ const PermissionPage = async () => {
     if (res.status === 200) {
       const data: PermissionsPaginatedResponse = res.data
 
-      permissions = data.data.data
+      permissions = data.data.data.map((permission) => ({
+        ...permission,
+        created_at: dateFormatted(permission.created_at),
+        updated_at: dateFormatted(permission.updated_at),
+      }))
 
       pagination = getPaginationData(data.data)
     }
-  } catch (error) {
-    console.log('ERROR: ', error)
+  } catch (error: unknown) {
+    errorMessage = String(error)
   }
 
   return (
     <PermissionComponent
       initialData={permissions}
       initialPagination={pagination}
+      error={errorMessage}
     />
   )
 }
