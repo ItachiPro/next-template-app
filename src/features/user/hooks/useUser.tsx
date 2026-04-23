@@ -120,7 +120,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
       const res = await UserService.deleteUser({ id: user.id })
 
       if (res.status === 204) {
-        getToastMessage('User deleted successfully', ToastType.Success)
+        getToastMessage('User deleted successfully.', ToastType.Success)
         getUsers()
       }
     } catch (error: unknown) {

@@ -85,7 +85,7 @@ export const usePermission = ({ initialData, initialPagination }: Props) => {
       })
 
       if (res.status === 204) {
-        getToastMessage('Permission deleted successfully', ToastType.Success)
+        getToastMessage('Permission deleted successfully.', ToastType.Success)
       }
     } catch (error: unknown) {
       const err = error as ApiError

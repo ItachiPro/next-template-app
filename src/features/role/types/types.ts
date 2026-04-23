@@ -8,3 +8,12 @@ export type Role = {
   updated_at: string
   permissions?: Permission[]
 }
+
+export type RoleData = {
+  id: number
+  name: string
+  guard_name: string
+  created_at: string
+  updated_at: string
+  permissions?: number
+}

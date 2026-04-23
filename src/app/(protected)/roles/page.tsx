@@ -1,14 +1,48 @@
-'use client'
+import { RoleData } from '@/features'
+import { RoleComponent } from '@/features/role/components'
+import { RoleService } from '@/features/role/services'
+import { getAuthHeaders } from '@/lib/auth-headers'
+import { Pagination, RolesPaginatedResponse } from '@/types'
+import { dateFormatted, getPaginationData } from '@/utils'
 
-import { Protected } from '@/components'
+const RolePage = async () => {
+  const headers = await getAuthHeaders()
 
-const RolePage = () => {
+  let roles: RoleData[] = []
+  let errorMessage: string | null = null
+
+  let pagination: Pagination = {
+    from: null,
+    to: null,
+    total: 0,
+    links: [],
+  }
+
+  try {
+    const res = await RoleService.getRoles({ headers })
+
+    if (res.status === 200) {
+      const data: RolesPaginatedResponse = res.data
+
+      roles = data.data.data.map((role) => ({
+        ...role,
+        created_at: dateFormatted(role.created_at),
+        updated_at: dateFormatted(role.updated_at),
+        permissions: role.permissions?.length,
+      }))
+
+      pagination = getPaginationData(data.data)
+    }
+  } catch (error: unknown) {
+    errorMessage = String(error)
+  }
+
   return (
-    <Protected permission="LIST_ROLE">
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h1>Roles</h1>
-      </div>
-    </Protected>
+    <RoleComponent
+      initialData={roles}
+      initialPagination={pagination}
+      error={errorMessage}
+    />
   )
 }
 

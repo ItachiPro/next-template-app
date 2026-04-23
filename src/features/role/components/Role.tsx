@@ -1,22 +1,22 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Pencil, Plus, Trash } from 'lucide-react'
 import { Pagination, ToastType } from '@/types'
+import { RoleData } from '../types'
+import { useAuth } from '@/hooks'
+import { useRole } from '../hooks'
 import { getToastMessage } from '@/utils'
 import { ConfirmModal, DataTable, EmptyData, Protected } from '@/components'
-import { Permission } from '../types'
-import { useAuth } from '@/hooks'
-import { usePermission } from '../hooks'
-import { PermissionFormModal } from './PermissionFormModal'
+import { Pencil, Plus, Trash, UserRoundKey } from 'lucide-react'
+import { RoleFormModal } from './RoleFormModal'
 
 type Props = {
-  initialData: Permission[]
+  initialData: RoleData[]
   initialPagination: Pagination
   error?: string | null
 }
 
-export const PermissionComponent = ({
+export const RoleComponent = ({
   initialData,
   initialPagination,
   error,
@@ -24,19 +24,23 @@ export const PermissionComponent = ({
   const { can } = useAuth()
 
   const {
-    permissions,
-    permission,
+    roles,
+    role,
+    roleWithPermission,
     pagination,
     openModal,
     openConfirmModal,
+    openAssignPermissionModal,
     mode,
     handleOpenModal,
     handleCloseModal,
     handleOpenConfirmModal,
     handleCloseConfirmModal,
-    getPermissions,
-    deletePermission,
-  } = usePermission({
+    handleOpenAssignModal,
+    handleCloseAssignPermissionModal,
+    getRoles,
+    deleteRole,
+  } = useRole({
     initialData,
     initialPagination,
   })
@@ -48,11 +52,11 @@ export const PermissionComponent = ({
   }, [error])
 
   return (
-    <Protected permission="LIST_PERMISSION">
+    <Protected permission="LIST_ROLE">
       <div className="bg-white rounded-2xl shadow p-6 flex items-center justify-between">
-        <h1 className="text-gray-500 text-lg font-semibold">Permissions</h1>
+        <h1 className="text-gray-500 text-lg font-semibold">Roles</h1>
 
-        {can('CREATE_PERMISSION') && (
+        {can('CREATE_ROLE') && (
           <button
             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-100 transition"
             onClick={() => handleOpenModal(false)}
@@ -62,12 +66,12 @@ export const PermissionComponent = ({
         )}
       </div>
 
-      <PermissionFormModal
+      <RoleFormModal
         open={openModal}
         mode={mode}
-        permission={permission}
+        role={role}
         onClose={handleCloseModal}
-        onSuccess={getPermissions}
+        onSuccess={getRoles}
       />
 
       <div className="mt-6">
@@ -86,12 +90,21 @@ export const PermissionComponent = ({
               value: 'updated_at',
             },
           ]}
-          data={permissions}
-          pagination={pagination as Pagination}
-          onPageChange={(page) => getPermissions(page)}
+          data={roles}
+          pagination={pagination}
+          onPageChange={(page) => getRoles(page)}
           renderActions={(row) => (
             <>
-              {can('UPDATE_PERMISSION') && (
+              {can('ASSIGN_PERMISSION_ROLE') && (
+                <button
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition"
+                  onClick={() => handleOpenAssignModal(row)}
+                >
+                  <UserRoundKey size={18} />
+                </button>
+              )}
+
+              {can('UPDATE_ROLE') && (
                 <button
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
                   onClick={() => handleOpenModal(true, row)}
@@ -100,7 +113,7 @@ export const PermissionComponent = ({
                 </button>
               )}
 
-              {can('DELETE_PERMISSIONS') && (
+              {can('DELETE_ROLE') && (
                 <button
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
                   onClick={() => handleOpenConfirmModal(row)}
@@ -110,15 +123,15 @@ export const PermissionComponent = ({
               )}
             </>
           )}
-          emptyState={<EmptyData message={'No permissions found'} />}
+          emptyState={<EmptyData message={'No roles found'} />}
         />
 
         <ConfirmModal
           isOpen={openConfirmModal}
           title="Confirm deletion"
-          message={`Are you sure you want to delete permission ${permission?.name}?`}
+          message={`Are you sure you want to delete role ${role?.name}?`}
           onCancel={handleCloseConfirmModal}
-          onConfirm={() => deletePermission(permission)}
+          onConfirm={() => deleteRole(role)}
         />
       </div>
     </Protected>

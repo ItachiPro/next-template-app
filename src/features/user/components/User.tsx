@@ -154,6 +154,7 @@ export const UserComponent = ({
           )}
           emptyState={<EmptyData message={'No users found'} />}
         />
+
         <ConfirmModal
           isOpen={openConfirmModal}
           title="Confirm deletion"
