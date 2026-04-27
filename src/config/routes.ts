@@ -16,7 +16,7 @@ export type AppRoute = {
 
 export const routes: AppRoute[] = [
   {
-    path: '/dashboard',
+    path: '/',
     label: 'Dashboard',
     icon: LayoutDashboard,
   },

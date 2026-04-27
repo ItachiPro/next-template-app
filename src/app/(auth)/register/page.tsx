@@ -52,7 +52,7 @@ const RegisterPage = () => {
 
           getToastMessage('Welcome', ToastType.Success)
 
-          router.push('/dashboard')
+          router.push('/')
         }
       } catch (error: unknown) {
         const err = error as ApiError
