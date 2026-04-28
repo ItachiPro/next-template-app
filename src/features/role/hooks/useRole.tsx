@@ -35,6 +35,7 @@ export const useRole = ({ initialData, initialPagination }: Props) => {
   const [openAssignPermissionModal, setOpenAssignPermissionModal] =
     useState<boolean>(false)
   const [mode, setMode] = useState<FormAction>(FormAction.Create)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleOpenModal = (isEdit: boolean, role?: RoleData) => {
     if (isEdit) {
@@ -83,6 +84,7 @@ export const useRole = ({ initialData, initialPagination }: Props) => {
   }
 
   const getRoles = async (page?: number) => {
+    setLoading(true)
     const res = await RoleService.getRoles({
       params: { ...(page ? { page } : {}) },
     })
@@ -102,6 +104,8 @@ export const useRole = ({ initialData, initialPagination }: Props) => {
       const pagination = getPaginationData(data.data)
       setPagination(pagination)
     }
+
+    setLoading(false)
   }
 
   const deleteRole = async (role: RoleData | null) => {
@@ -124,6 +128,7 @@ export const useRole = ({ initialData, initialPagination }: Props) => {
   }
 
   return {
+    loading,
     roles,
     role,
     roleWithPermission,

@@ -34,6 +34,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
   const [openAssignPermissionModal, setOpenAssignPermissionModal] =
     useState<boolean>(false)
   const [mode, setMode] = useState<FormAction>(FormAction.Create)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleOpenModal = (isEdit: boolean, user?: UserData) => {
     if (isEdit) {
@@ -91,6 +92,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
   }
 
   const getUsers = async (page?: number) => {
+    setLoading(true)
     const res = await UserService.getUsers({
       params: { ...(page ? { page } : {}) },
     })
@@ -111,6 +113,8 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
       const pagination = getPaginationData(data.data)
       setPagination(pagination)
     }
+
+    setLoading(false)
   }
 
   const deleteUser = async (user: UserData | null) => {
@@ -133,6 +137,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
   }
 
   return {
+    loading,
     users,
     user,
     userWithRoles,

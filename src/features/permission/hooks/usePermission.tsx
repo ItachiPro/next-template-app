@@ -29,6 +29,7 @@ export const usePermission = ({ initialData, initialPagination }: Props) => {
   const [openModal, setOpenModal] = useState<boolean>(false)
   const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false)
   const [mode, setMode] = useState<FormAction>(FormAction.Create)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleOpenModal = (isEdit: boolean, permission?: Permission) => {
     if (isEdit) {
@@ -56,6 +57,7 @@ export const usePermission = ({ initialData, initialPagination }: Props) => {
   }
 
   const getPermissions = async (page?: number) => {
+    setLoading(true)
     const res = await PermissionService.getPermissions({
       params: { ...(page ? { page } : {}) },
     })
@@ -74,6 +76,8 @@ export const usePermission = ({ initialData, initialPagination }: Props) => {
       const pagination = getPaginationData(data.data)
       setPagination(pagination)
     }
+
+    setLoading(false)
   }
 
   const deletePermission = async (permission: Permission | null) => {
@@ -97,6 +101,7 @@ export const usePermission = ({ initialData, initialPagination }: Props) => {
   }
 
   return {
+    loading,
     permissions,
     permission,
     pagination,

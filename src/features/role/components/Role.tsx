@@ -24,6 +24,7 @@ export const RoleComponent = ({
   const { can } = useAuth()
 
   const {
+    loading,
     roles,
     role,
     roleWithPermission,
@@ -91,6 +92,7 @@ export const RoleComponent = ({
             },
           ]}
           data={roles}
+          loading={loading}
           pagination={pagination}
           onPageChange={(page) => getRoles(page)}
           renderActions={(row) => (

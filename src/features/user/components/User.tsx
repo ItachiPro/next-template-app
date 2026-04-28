@@ -26,6 +26,7 @@ export const UserComponent = ({
   const { can } = useAuth()
 
   const {
+    loading,
     users,
     user,
     userWithRoles,
@@ -111,6 +112,7 @@ export const UserComponent = ({
             },
           ]}
           data={users}
+          loading={loading}
           pagination={pagination}
           onPageChange={(page) => getUsers(page)}
           renderActions={(row) => (

@@ -6,6 +6,7 @@ type TableRow = Record<string, React.ReactNode>
 type Props<TData extends TableRow> = {
   headers: TableHeader<TData>[]
   data: TData[]
+  loading?: boolean
   pagination?: Pagination
   emptyState?: React.ReactElement
   onPageChange?: (page: number) => void
@@ -15,6 +16,7 @@ type Props<TData extends TableRow> = {
 export const DataTable = <TData extends TableRow>({
   headers,
   data,
+  loading = false,
   pagination,
   emptyState,
   onPageChange,
@@ -51,7 +53,17 @@ export const DataTable = <TData extends TableRow>({
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 ? (
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <tr key={i} className="animate-pulse">
+                {tableHeaders.map((_, j) => (
+                  <td key={j} className="px-6 py-4">
+                    <div className="h-4 bg-gray-200 rounded w-full" />
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : data.length === 0 ? (
             <tr>
               <td
                 colSpan={tableHeaders.length}
@@ -87,7 +99,7 @@ export const DataTable = <TData extends TableRow>({
           )}
         </tbody>
       </table>
-      {data.length > 0 && (
+      {(data.length > 0 || loading) && (
         <nav className="flex items-center justify-between px-6 py-4">
           <span className="text-sm text-gray-500">
             Showing{' '}

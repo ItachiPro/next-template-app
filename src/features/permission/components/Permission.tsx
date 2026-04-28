@@ -24,6 +24,7 @@ export const PermissionComponent = ({
   const { can } = useAuth()
 
   const {
+    loading,
     permissions,
     permission,
     pagination,
@@ -87,6 +88,7 @@ export const PermissionComponent = ({
             },
           ]}
           data={permissions}
+          loading={loading}
           pagination={pagination as Pagination}
           onPageChange={(page) => getPermissions(page)}
           renderActions={(row) => (
