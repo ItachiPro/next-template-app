@@ -1,53 +1,37 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { User } from '../types'
+import { Role } from '../types'
 import { Permission } from '@/features/permission'
 import { PermissionService } from '@/features/permission/services'
 import { PermissionsResponse } from '@/types'
 import { AssignPermissionForm, Modal } from '@/components'
-import { UserService } from '../services'
+import { RoleService } from '../services'
 
 type Props = {
   open: boolean
-  user: User | null
+  role: Role | null
   onClose: () => void
 }
 
-export const UserAssignPermissionModal = ({ open, user, onClose }: Props) => {
+export const RoleAssignPermissionModal = ({ open, role, onClose }: Props) => {
   const [permissions, setPermissions] = useState<Permission[]>([])
 
   const assignedPermissions = useMemo(() => {
-    if (!user) {
+    if (!role) {
       return []
     }
 
     const permissions =
-      user.permissions && user.permissions.length > 0
-        ? user.permissions.map((permission) => permission.name)
+      role.permissions && role.permissions.length > 0
+        ? role.permissions.map((permission) => permission.name)
         : []
 
     return permissions
-  }, [user])
-
-  const inheritedPermissionIds = useMemo(() => {
-    if (!user) {
-      return []
-    }
-
-    const ids = new Set<number>()
-
-    user.roles?.forEach((role) => {
-      role.permissions?.forEach((p) => {
-        if (p.id) ids.add(p.id)
-      })
-    })
-
-    return [...ids]
-  }, [user])
+  }, [role])
 
   useEffect(() => {
-    if (!user) {
+    if (!role) {
       return
     }
 
@@ -65,21 +49,20 @@ export const UserAssignPermissionModal = ({ open, user, onClose }: Props) => {
 
     getPermissions()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
+  }, [role?.id])
 
   return (
     <Modal open={open} onClose={onClose} title="Assign permissions">
       <AssignPermissionForm
-        id={user?.id ?? null}
+        id={role?.id ?? null}
         allPermissions={permissions}
         assignedPermissions={assignedPermissions}
-        disabledPermissionIds={inheritedPermissionIds}
         onSuccess={() => {
           onClose()
         }}
         onClose={onClose}
         assignService={(id, permissions) =>
-          UserService.assignPermissions({ id, data: { permissions } })
+          RoleService.assignPermissions({ id, data: { permissions } })
         }
       />
     </Modal>

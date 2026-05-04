@@ -9,6 +9,7 @@ import { getToastMessage } from '@/utils'
 import { ConfirmModal, DataTable, EmptyData, Protected } from '@/components'
 import { Pencil, Plus, Trash, UserRoundKey } from 'lucide-react'
 import { RoleFormModal } from './RoleFormModal'
+import { RoleAssignPermissionModal } from './RoleAssignPermissionModal'
 
 type Props = {
   initialData: RoleData[]
@@ -73,6 +74,12 @@ export const RoleComponent = ({
         role={role}
         onClose={handleCloseModal}
         onSuccess={getRoles}
+      />
+
+      <RoleAssignPermissionModal
+        open={openAssignPermissionModal}
+        role={roleWithPermission}
+        onClose={handleCloseAssignPermissionModal}
       />
 
       <div className="mt-6">

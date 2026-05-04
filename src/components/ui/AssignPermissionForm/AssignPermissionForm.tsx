@@ -2,39 +2,47 @@
 
 import { useEffect } from 'react'
 import { Permission } from '@/features/permission'
-import { User } from '../types'
 import { useForm } from '@/hooks'
 import { assignPermissionSchema } from '@/lib/schemas'
-import { ApiError, ToastType, UserResponse } from '@/types'
+import { ApiError, ApiSuccessResponse, ToastType } from '@/types'
 import { getToastMessage, mapErrors } from '@/utils'
-import { UserService } from '../services'
 import { DualListField } from '@/components'
+import { AxiosResponse } from 'axios'
 
-type Props = {
-  user: User | null
+type AssignService<TModule> = (
+  id: number,
+  permissions: number[],
+) => Promise<AxiosResponse<ApiSuccessResponse<TModule>>>
+
+type Props<TService> = {
+  id: number | null
+  allPermissions: Permission[]
   assignedPermissions: string[]
-  permissions: Permission[]
+  disabledPermissionIds?: number[]
   onSuccess: () => void
   onClose: () => void
+  assignService: AssignService<TService>
 }
 
-export const AssignPermissionForm = ({
-  user,
+export const AssignPermissionForm = <TService,>({
+  id,
+  allPermissions,
   assignedPermissions,
-  permissions,
+  disabledPermissionIds = [],
   onSuccess,
   onClose,
-}: Props) => {
+  assignService,
+}: Props<TService>) => {
   const { form, setField, handleSubmit, getError, hasError, setBackendErrors } =
     useForm({
       initialValues: {
-        permissions: permissions.filter((p) =>
+        permissions: allPermissions.filter((p) =>
           assignedPermissions.includes(p.name),
         ),
       },
       schema: assignPermissionSchema,
       onSubmit: async (values) => {
-        if (!user) {
+        if (!id) {
           return
         }
 
@@ -43,15 +51,10 @@ export const AssignPermissionForm = ({
             (permission) => permission.id,
           )
 
-          const res = await UserService.assignPermissions({
-            id: user.id,
-            data: {
-              permissions: permissions,
-            },
-          })
+          const res = await assignService(id, permissions)
 
           if (res.status === 200) {
-            const data: UserResponse = res.data
+            const data = res.data
             getToastMessage(data.message, ToastType.Success)
             onSuccess()
           }
@@ -70,22 +73,23 @@ export const AssignPermissionForm = ({
   useEffect(() => {
     const assignedSet = new Set(assignedPermissions)
 
-    const mappedPermissions = permissions.filter((p) => assignedSet.has(p.name))
+    const mapped = allPermissions.filter((p) => assignedSet.has(p.name))
 
-    setField('permissions', mappedPermissions)
+    setField('permissions', mapped)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissions, assignedPermissions])
+  }, [allPermissions, assignedPermissions])
 
   return (
     <div>
       <DualListField
-        items={permissions}
+        items={allPermissions}
         value={form.permissions}
         onChange={(permissions) => setField('permissions', permissions)}
         getId={(permission) => permission.id}
         getLabel={(permission) => permission.name}
         leftTitle="Available permissions"
         rightTitle="Assigned permissions"
+        disabledItems={disabledPermissionIds}
         hasError={hasError('permissions')}
       />
 

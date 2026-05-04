@@ -12,6 +12,7 @@ type Props<T> = {
   getLabel: (item: T) => string
   leftTitle?: string
   rightTitle?: string
+  disabledItems?: (string | number)[]
   hasError: boolean
 }
 
@@ -23,6 +24,7 @@ export const DualListField = <T,>({
   getLabel,
   leftTitle = 'Available',
   rightTitle = 'Selected',
+  disabledItems = [],
   hasError = false,
 }: Props<T>) => {
   const [selectedLeft, setSelectedLeft] = useState<(string | number)[]>([])
@@ -30,9 +32,18 @@ export const DualListField = <T,>({
 
   const selectedSet = useMemo(() => new Set(value.map(getId)), [value, getId])
 
+  const disabledSet = useMemo(
+    () => new Set(disabledItems ?? []),
+    [disabledItems],
+  )
+
   const availableItems = useMemo(
-    () => items.filter((item) => !selectedSet.has(getId(item))),
-    [items, selectedSet, getId],
+    () =>
+      items.filter(
+        (item) =>
+          !selectedSet.has(getId(item)) && !disabledSet.has(getId(item)),
+      ),
+    [items, selectedSet, disabledSet, getId],
   )
 
   const toggleSelection = (
@@ -48,7 +59,10 @@ export const DualListField = <T,>({
   }
 
   const moveToRight = () => {
-    const toAdd = items.filter((item) => selectedLeft.includes(getId(item)))
+    const toAdd = items.filter(
+      (item) =>
+        selectedLeft.includes(getId(item)) && !disabledSet.has(getId(item)),
+    )
 
     onChange([...value, ...toAdd])
     setSelectedLeft([])
@@ -56,7 +70,8 @@ export const DualListField = <T,>({
 
   const moveToLeft = () => {
     const newValue = value.filter(
-      (item) => !selectedRight.includes(getId(item)),
+      (item) =>
+        !selectedRight.includes(getId(item)) || disabledSet.has(getId(item)),
     )
 
     onChange(newValue)
@@ -74,7 +89,6 @@ export const DualListField = <T,>({
         selectedColor={SelectedColor.Blue}
         onToggle={(label) => {
           const item = availableItems.find((i) => getLabel(i) === label)
-
           if (!item) return
 
           toggleSelection(getId(item), selectedLeft, setSelectedLeft)
@@ -110,6 +124,8 @@ export const DualListField = <T,>({
         onToggle={(label) => {
           const item = value.find((i) => getLabel(i) === label)
           if (!item) return
+
+          if (disabledSet.has(getId(item))) return
 
           toggleSelection(getId(item), selectedRight, setSelectedRight)
         }}

@@ -2,7 +2,7 @@ import { RoleData } from '@/features'
 import { RoleComponent } from '@/features/role/components'
 import { RoleService } from '@/features/role/services'
 import { getAuthHeaders } from '@/lib/auth-headers'
-import { Pagination, RolesPaginatedResponse } from '@/types'
+import { Pagination } from '@/types'
 import { dateFormatted, getPaginationData } from '@/utils'
 
 const RolePage = async () => {
@@ -22,7 +22,7 @@ const RolePage = async () => {
     const res = await RoleService.getRoles({ headers })
 
     if (res.status === 200) {
-      const data: RolesPaginatedResponse = res.data
+      const data = res.data
 
       roles = data.data.data.map((role) => ({
         ...role,

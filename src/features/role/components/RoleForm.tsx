@@ -46,7 +46,7 @@ export const RoleForm = ({ mode, role, onSuccess }: Props) => {
           : await RoleService.saveRole({ data: payload })
 
         if (res.status === 201 || res.status === 200) {
-          const data: RolesPaginatedResponse = res.data
+          const data = res.data
           getToastMessage(data.message, ToastType.Success)
           onSuccess()
         }

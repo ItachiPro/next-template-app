@@ -8,7 +8,9 @@ import {
   UpdateParams,
   UserRoleDTO,
   UserPermissionDTO,
+  ApiSuccessResponse,
 } from '@/types'
+import { User } from '../types'
 
 export const UserService = {
   async getUsers({ params, headers }: GetParams) {
@@ -45,7 +47,11 @@ export const UserService = {
     data,
     headers,
   }: UpdateParams<UserPermissionDTO>) {
-    const response = await api.put(`/user/${id}/permissions`, data, { headers })
+    const response = await api.put<ApiSuccessResponse<User>>(
+      `/user/${id}/permissions`,
+      data,
+      { headers },
+    )
     return response
   },
 
