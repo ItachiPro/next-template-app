@@ -9,7 +9,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      redirect('/dashboard')
+      redirect('/')
     }
   }, [isAuthenticated])
 

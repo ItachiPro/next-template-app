@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { AuthService } from '@/services/auth.service'
 import { Menu, UserRound } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useAuthContext } from '@/app/context'
@@ -18,12 +17,8 @@ export const Navbar = ({ setMobileOpen }: Props) => {
   const router = useRouter()
 
   const onLogout = async () => {
-    const response = await AuthService.logout()
-
-    if (response.status === 200) {
-      logout()
-      router.push('/login')
-    }
+    await logout()
+    router.push('/login')
   }
 
   return (

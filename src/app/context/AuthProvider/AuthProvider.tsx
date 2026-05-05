@@ -7,13 +7,13 @@ import { createContext, useContext, useEffect, useState } from 'react'
 type AuthContextType = {
   isAuthenticated: boolean
   login: () => void
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   login: () => {},
-  logout: () => {},
+  logout: async () => {},
 })
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -55,6 +55,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const logout = async () => {
+    if (!isAuthenticated) return
+
     try {
       await AuthService.logout()
     } catch (error) {

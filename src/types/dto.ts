@@ -1,4 +1,4 @@
-import { Permission, Role, User } from '@/features'
+import { AuthUser, Permission, Role, User, UserInfo } from '@/features'
 import { ApiSuccessResponse, PaginatedResponse } from './api'
 
 export type UserDTO = {
@@ -26,6 +26,9 @@ export type RolePermissionDTO = {
 export type PermissionDTO = {
   name: string
 }
+
+export type AuthResponse = ApiSuccessResponse<AuthUser>
+export type UserInfoResponse = ApiSuccessResponse<UserInfo>
 
 export type UserResponse = ApiSuccessResponse<User>
 export type UsersResponse = ApiSuccessResponse<User[]>

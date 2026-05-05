@@ -15,7 +15,7 @@ export const Protected = ({
   children,
   permission,
   role,
-  redirectTo = '/dashboard',
+  redirectTo = '/',
 }: Props) => {
   const { can, hasRole, user } = useAuth()
   const router = useRouter()

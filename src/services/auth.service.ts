@@ -1,14 +1,14 @@
 import api from '@/lib/axios'
-import { LoginDTO, RegisterDTO } from '@/types'
+import { AuthResponse, LoginDTO, RegisterDTO, UserInfoResponse } from '@/types'
 
 export const AuthService = {
   async register(data: RegisterDTO) {
-    const response = await api.post('/register', data)
+    const response = await api.post<AuthResponse>('/register', data)
     return response
   },
 
   async login(data: LoginDTO) {
-    const response = await api.post('/login', data)
+    const response = await api.post<AuthResponse>('/login', data)
     return response
   },
 
@@ -18,7 +18,7 @@ export const AuthService = {
   },
 
   async me() {
-    const response = await api.get('/me')
+    const response = await api.get<UserInfoResponse>('/me')
     return response
   },
 }
