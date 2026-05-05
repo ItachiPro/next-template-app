@@ -1,48 +1,43 @@
 import api from '@/lib/axios'
 import {
-  ApiSuccessResponse,
   DeleteParams,
   GetByIdParams,
   GetParams,
-  PaginatedResponse,
   RoleDTO,
   RolePermissionDTO,
+  RoleResponse,
+  RolesPaginatedResponse,
   SaveParams,
   UpdateParams,
 } from '@/types'
-import { Role } from '../types'
 
 export const RoleService = {
   async getRoles({ params, headers }: GetParams) {
-    const response = await api.get<ApiSuccessResponse<PaginatedResponse<Role>>>(
-      '/roles',
-      { params, headers },
-    )
+    const response = await api.get<RolesPaginatedResponse>('/roles', {
+      params,
+      headers,
+    })
     return response
   },
 
   async getRole({ id, headers }: GetByIdParams) {
-    const response = await api.get<ApiSuccessResponse<Role>>(`/role/${id}`, {
+    const response = await api.get<RoleResponse>(`/role/${id}`, {
       headers,
     })
     return response
   },
 
   async saveRole({ data, headers }: SaveParams<RoleDTO>) {
-    const response = await api.post<ApiSuccessResponse<Role>>('/role', data, {
+    const response = await api.post<RoleResponse>('/role', data, {
       headers,
     })
     return response
   },
 
   async updateRole({ id, data, headers }: UpdateParams<RoleDTO>) {
-    const response = await api.put<ApiSuccessResponse<Role>>(
-      `/role/${id}`,
-      data,
-      {
-        headers,
-      },
-    )
+    const response = await api.put<RoleResponse>(`/role/${id}`, data, {
+      headers,
+    })
     return response
   },
 
@@ -51,7 +46,7 @@ export const RoleService = {
     data,
     headers,
   }: UpdateParams<RolePermissionDTO>) {
-    const response = await api.put<ApiSuccessResponse<Role>>(
+    const response = await api.put<RoleResponse>(
       `/role/${id}/permissions`,
       data,
       { headers },

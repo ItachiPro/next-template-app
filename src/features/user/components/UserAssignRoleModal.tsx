@@ -5,8 +5,7 @@ import { Modal } from '@/components/ui/Modal'
 import { AssignRoleForm } from './AssignRoleForm'
 import { User } from '../types'
 import { Role } from '@/features/role'
-import { RoleService } from '@/features/role/services'
-import { RolesResponse } from '@/types'
+import { CatalogService } from '@/services/catalog.service'
 
 type Props = {
   open: boolean
@@ -36,12 +35,12 @@ export const UserAssignRoleModal = ({ open, user, onClose }: Props) => {
     }
 
     const getRoles = async () => {
-      const res = await RoleService.getRoles({
+      const res = await CatalogService.getRoles({
         params: { pagination: false },
       })
 
       if (res.status === 200) {
-        const data: RolesResponse = res.data
+        const data = res.data
 
         setRoles(data.data)
       }

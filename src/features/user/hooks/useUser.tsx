@@ -1,14 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  ApiError,
-  FormAction,
-  Pagination,
-  ToastType,
-  UserResponse,
-  UsersPaginatedResponse,
-} from '@/types'
+import { ApiError, FormAction, Pagination, ToastType } from '@/types'
 import {
   dateFormatted,
   getPaginationData,
@@ -68,7 +61,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
       })
 
       if (res.status === 200) {
-        const data: UserResponse = res.data
+        const data = res.data
 
         setUserWithRoles(data.data)
 
@@ -98,7 +91,7 @@ export const useUser = ({ initialData, initialPagination }: Props) => {
     })
 
     if (res.status === 200) {
-      const data: UsersPaginatedResponse = res.data
+      const data = res.data
 
       const users: UserData[] = data.data.data.map((user) => ({
         ...user,

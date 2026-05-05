@@ -7,7 +7,7 @@ import { DualListField } from '@/components'
 import { useForm } from '@/hooks'
 import { assignRoleSchema } from '@/lib/schemas'
 import { UserService } from '../services'
-import { ApiError, ToastType, UserResponse } from '@/types'
+import { ApiError, ToastType } from '@/types'
 import { getToastMessage, mapErrors } from '@/utils'
 
 type Props = {
@@ -47,7 +47,7 @@ export const AssignRoleForm = ({
           })
 
           if (res.status === 200) {
-            const data: UserResponse = res.data
+            const data = res.data
             getToastMessage(data.message, ToastType.Success)
             onSuccess()
           }

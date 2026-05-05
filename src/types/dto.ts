@@ -27,8 +27,6 @@ export type PermissionDTO = {
   name: string
 }
 
-export type ApiResponse<T> = ApiSuccessResponse<T>
-
 export type UserResponse = ApiSuccessResponse<User>
 export type UsersResponse = ApiSuccessResponse<User[]>
 export type UsersPaginatedResponse = ApiSuccessResponse<PaginatedResponse<User>>

@@ -1,14 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  ApiError,
-  FormAction,
-  Pagination,
-  RoleResponse,
-  RolesPaginatedResponse,
-  ToastType,
-} from '@/types'
+import { ApiError, FormAction, Pagination, ToastType } from '@/types'
 import { Role, RoleData } from '../types'
 import { RoleService } from '../services'
 import {
@@ -69,7 +62,7 @@ export const useRole = ({ initialData, initialPagination }: Props) => {
       })
 
       if (res.status === 200) {
-        const data: RoleResponse = res.data
+        const data = res.data
 
         setRoleWithPermissions(data.data)
         setOpenAssignPermissionModal(true)
@@ -90,7 +83,7 @@ export const useRole = ({ initialData, initialPagination }: Props) => {
     })
 
     if (res.status === 200) {
-      const data: RolesPaginatedResponse = res.data
+      const data = res.data
 
       const roles: RoleData[] = data.data.data.map((role) => ({
         ...role,

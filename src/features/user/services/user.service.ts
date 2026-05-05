@@ -8,37 +8,44 @@ import {
   UpdateParams,
   UserRoleDTO,
   UserPermissionDTO,
-  ApiSuccessResponse,
+  UsersPaginatedResponse,
+  UserResponse,
 } from '@/types'
-import { User } from '../types'
 
 export const UserService = {
   async getUsers({ params, headers }: GetParams) {
-    const response = await api.get('/users', { params, headers })
+    const response = await api.get<UsersPaginatedResponse>('/users', {
+      params,
+      headers,
+    })
     return response
   },
 
   async getUser({ id, headers }: GetByIdParams) {
-    const response = await api.get(`/user/${id}`, {
+    const response = await api.get<UserResponse>(`/user/${id}`, {
       headers,
     })
     return response
   },
 
   async saveUser({ data, headers }: SaveParams<UserDTO>) {
-    const response = await api.post('/user', data, {
+    const response = await api.post<UserResponse>('/user', data, {
       headers,
     })
     return response
   },
 
   async updateUser({ id, data, headers }: UpdateParams<UserDTO>) {
-    const response = await api.put(`/user/${id}`, data, { headers })
+    const response = await api.put<UserResponse>(`/user/${id}`, data, {
+      headers,
+    })
     return response
   },
 
   async assignRoles({ id, data, headers }: UpdateParams<UserRoleDTO>) {
-    const response = await api.put(`/user/${id}/roles`, data, { headers })
+    const response = await api.put<UserResponse>(`/user/${id}/roles`, data, {
+      headers,
+    })
     return response
   },
 
@@ -47,7 +54,7 @@ export const UserService = {
     data,
     headers,
   }: UpdateParams<UserPermissionDTO>) {
-    const response = await api.put<ApiSuccessResponse<User>>(
+    const response = await api.put<UserResponse>(
       `/user/${id}/permissions`,
       data,
       { headers },

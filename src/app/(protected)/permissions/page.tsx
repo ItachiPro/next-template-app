@@ -2,7 +2,6 @@ import { PermissionComponent } from '@/features/permission/components'
 import { getAuthHeaders } from '@/lib/auth-headers'
 import { PermissionService } from '@/features/permission/services/permission.service'
 import { Pagination } from '@/types'
-import { PermissionsPaginatedResponse } from '@/types/dto'
 import { dateFormatted, getPaginationData } from '@/utils'
 import { Permission } from '@/features'
 
@@ -23,7 +22,7 @@ const PermissionPage = async () => {
     const res = await PermissionService.getPermissions({ headers })
 
     if (res.status === 200) {
-      const data: PermissionsPaginatedResponse = res.data
+      const data = res.data
 
       permissions = data.data.data.map((permission) => ({
         ...permission,

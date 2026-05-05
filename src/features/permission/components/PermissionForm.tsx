@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  ApiError,
-  FormAction,
-  PermissionsPaginatedResponse,
-  ToastType,
-} from '@/types'
+import { ApiError, FormAction, ToastType } from '@/types'
 import { Permission } from '../types'
 import { useForm } from '@/hooks'
 import { permissionSchema } from '@/lib/schemas'
@@ -46,7 +41,7 @@ export const PermissionForm = ({ mode, permission, onSuccess }: Props) => {
           : await PermissionService.savePermission({ data: payload })
 
         if (res.status === 201 || res.status === 200) {
-          const data: PermissionsPaginatedResponse = res.data
+          const data = res.data
           getToastMessage(data.message, ToastType.Success)
           onSuccess()
         }

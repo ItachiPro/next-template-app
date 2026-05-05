@@ -1,7 +1,6 @@
 import { getAuthHeaders } from '@/lib/auth-headers'
 import { UserService } from '@/features/user/services/user.service'
 import { Pagination } from '@/types'
-import { UsersPaginatedResponse } from '@/types/dto'
 import { dateFormatted, getPaginationData } from '@/utils'
 import { UserComponent, UserData } from '@/features'
 
@@ -22,7 +21,7 @@ const UserPage = async () => {
     const res = await UserService.getUsers({ headers })
 
     if (res.status === 200) {
-      const data: UsersPaginatedResponse = res.data
+      const data = res.data
 
       users = data.data.data.map((user) => ({
         ...user,

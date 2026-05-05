@@ -1,13 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  ApiError,
-  FormAction,
-  Pagination,
-  PermissionsPaginatedResponse,
-  ToastType,
-} from '@/types'
+import { ApiError, FormAction, Pagination, ToastType } from '@/types'
 import { Permission } from '../types'
 import { PermissionService } from '../services'
 import {
@@ -63,7 +57,7 @@ export const usePermission = ({ initialData, initialPagination }: Props) => {
     })
 
     if (res.status === 200) {
-      const data: PermissionsPaginatedResponse = res.data
+      const data = res.data
 
       const permissions: Permission[] = data.data.data.map((permission) => ({
         ...permission,

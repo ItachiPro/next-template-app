@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { User } from '../types'
 import { Permission } from '@/features/permission'
-import { PermissionService } from '@/features/permission/services'
-import { PermissionsResponse } from '@/types'
 import { AssignPermissionForm, Modal } from '@/components'
 import { UserService } from '../services'
+import { CatalogService } from '@/services/catalog.service'
 
 type Props = {
   open: boolean
@@ -52,12 +51,12 @@ export const UserAssignPermissionModal = ({ open, user, onClose }: Props) => {
     }
 
     const getPermissions = async () => {
-      const res = await PermissionService.getPermissions({
+      const res = await CatalogService.getPermissions({
         params: { pagination: false },
       })
 
       if (res.status === 200) {
-        const data: PermissionsResponse = res.data
+        const data = res.data
 
         setPermissions(data.data)
       }
